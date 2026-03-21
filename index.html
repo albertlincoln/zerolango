@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZeroLango</title>
+  <link rel="stylesheet" href="src/ui/styles.css">
+</head>
+<body>
+<button id="btn-theme-toggle" title="Toggle dark mode">🌙</button>
+<div id="app">
+
+  <!-- Screen: Users -->
+  <div id="screen-users" class="screen">
+    <div class="screen-content">
+      <div class="brand">
+        <h1>⭐ ZeroLango ⭐</h1>
+        <p class="subtitle">Japanese character matching game</p>
+      </div>
+      <div id="users-list"></div>
+      <div class="divider-text">or</div>
+      <div class="add-user-form">
+        <input type="text" id="new-username" placeholder="New username…" maxlength="20" autocomplete="off">
+        <button id="btn-add-user" class="btn-primary">Add User</button>
+      </div>
+      <p id="users-error" class="error-msg hidden"></p>
+    </div>
+  </div>
+
+  <!-- Screen: Setup -->
+  <div id="screen-setup" class="screen hidden">
+    <div class="screen-content">
+      <div class="screen-nav">
+        <button id="btn-back-users" class="btn-back">← Users</button>
+        <span id="setup-username-label" class="current-user-label"></span>
+      </div>
+      <h2>Game Settings</h2>
+      <div class="settings-group">
+        <h3>🤖 Mode</h3>
+        <div class="toggle-group" id="mode-options">
+          <button class="toggle-btn active" data-value="hiragana">Hiragana</button>
+          <button class="toggle-btn" data-value="katakana">Katakana</button>
+          <button class="toggle-btn" data-value="kanji">Kanji</button>
+          <button class="toggle-btn" data-value="mixed">Mixed</button>
+          <button class="toggle-btn" data-value="vocabulary">Vocabulary</button>
+        </div>
+      </div>
+      <div class="settings-group">
+        <h3>🎯 Direction</h3>
+        <div class="toggle-group" id="direction-options">
+          <button class="toggle-btn active" data-value="roman-to-japanese">Roman → Japanese</button>
+          <button class="toggle-btn" data-value="japanese-to-roman">Japanese → Roman</button>
+          <button class="toggle-btn" data-value="both">Both</button>
+        </div>
+      </div>
+      <div class="settings-group">
+        <h3>⏳ Duration</h3>
+        <div class="toggle-group" id="duration-options">
+          <button class="toggle-btn active" data-value="60">60s</button>
+          <button class="toggle-btn" data-value="90">90s</button>
+          <button class="toggle-btn" data-value="120">120s</button>
+        </div>
+      </div>
+      <div id="setup-best-score" class="best-score-display"></div>
+      <div class="setup-actions">
+        <button id="btn-start-game" class="btn-primary btn-large">Start Game</button>
+        <button id="btn-view-stats" class="btn-secondary">View Stats</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Screen: Game -->
+  <div id="screen-game" class="screen hidden">
+    <div class="game-header">
+      <div class="game-stat">
+        <span class="stat-label">Score</span>
+        <span id="game-score">0</span>
+      </div>
+      <div id="game-timer-wrap">
+        <div id="game-timer">60</div>
+      </div>
+      <div class="game-stat">
+        <span class="stat-label">Streak</span>
+        <span id="game-streak">0</span>
+      </div>
+    </div>
+    <div class="game-body">
+      <div id="game-prompt-wrap">
+        <div id="game-prompt"></div>
+        <div id="game-direction-hint" class="direction-hint"></div>
+      </div>
+      <div id="game-options" class="options-grid"></div>
+    </div>
+  </div>
+
+  <!-- Screen: Stats -->
+  <div id="screen-stats" class="screen hidden">
+    <div class="screen-content stats-content">
+      <div class="screen-nav">
+        <button id="btn-back-from-stats" class="btn-back">← Setup</button>
+        <span id="stats-username-label" class="current-user-label"></span>
+      </div>
+      <h2>Character Stats</h2>
+      <div id="stats-summary" class="stats-summary-bar"></div>
+      <div class="stats-legend">
+        <span class="legend-item acc-high">≥80% mastered</span>
+        <span class="legend-item acc-mid-high">60–79%</span>
+        <span class="legend-item acc-mid-low">40–59%</span>
+        <span class="legend-item acc-low">&lt;40% needs work</span>
+        <span class="legend-item unseen">unseen</span>
+      </div>
+      <div class="stats-tabs">
+        <button class="stats-tab active" data-script="hiragana">Hiragana</button>
+        <button class="stats-tab" data-script="katakana">Katakana</button>
+        <button class="stats-tab" data-script="kanji">Kanji</button>
+        <button class="stats-tab" data-script="vocabulary">Vocabulary</button>
+      </div>
+      <div id="stats-grid" class="stats-grid"></div>
+    </div>
+  </div>
+
+  <!-- Screen: Summary -->
+  <div id="screen-summary" class="screen hidden">
+    <div class="screen-content">
+      <h2>Round Complete!</h2>
+      <div id="summary-stats" class="summary-stats"></div>
+      <div id="missed-section" class="missed-section hidden">
+        <h3>Missed Items</h3>
+        <div id="missed-list" class="missed-list"></div>
+      </div>
+      <div class="summary-actions">
+        <button id="btn-play-again" class="btn-primary">Play Again</button>
+        <button id="btn-change-settings" class="btn-secondary">Change Settings</button>
+        <button id="btn-main-menu" class="btn-ghost">Main Menu</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="src/data/hiragana.js"></script>
+<script src="src/data/vocabulary.js"></script>
+<script src="src/data/katakana.js"></script>
+<script src="src/data/kanji.js"></script>
+<script src="src/storage/localStorage.js"></script>
+<script src="src/game/engine.js"></script>
+<script src="src/app.js"></script>
+</body>
+</html>
