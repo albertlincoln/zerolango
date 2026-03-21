@@ -1,0 +1,2519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZeroLango</title>
+  <style>
+/* =========================================================
+   ZeroLango — Stylesheet
+   ========================================================= */
+
+/* ----- CSS Custom Properties ----- */
+:root {
+  --bg: #f5f5f7;
+  --surface: #ffffff;
+  --primary: #5b4fcf;
+  --primary-hover: #4a3fb5;
+  --primary-light: #ede9ff;
+  --text: #1d1d1f;
+  --text-muted: #6e6e73;
+  --border: #d2d2d7;
+  --correct: #34c759;
+  --correct-light: #d4f7de;
+  --incorrect: #ff3b30;
+  --incorrect-light: #ffe5e4;
+  --timer-warning: #ff9500;
+  --timer-warning-light: #fff3e0;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 24px rgba(0, 0, 0, 0.12);
+  --transition: 150ms ease;
+}
+
+/* ----- Dark Mode Variables ----- */
+html[data-theme="dark"] {
+  --bg: #111118;
+  --surface: #1c1c26;
+  --primary: #8a7ff8;
+  --primary-hover: #7a6fe8;
+  --primary-light: #252040;
+  --text: #f0f0f5;
+  --text-muted: #8e8e9e;
+  --border: #2e2e3e;
+  --correct: #30d158;
+  --correct-light: #0c2418;
+  --incorrect: #ff453a;
+  --incorrect-light: #2e100e;
+  --timer-warning: #ff9f0a;
+  --timer-warning-light: #2a1e06;
+  --shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 24px rgba(0, 0, 0, 0.6);
+}
+
+/* ----- Reset & Base ----- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  line-height: 1.2;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  outline: none;
+}
+
+input {
+  font-family: inherit;
+  outline: none;
+}
+
+/* ----- App Container ----- */
+#app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ----- Screen System ----- */
+.screen {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  animation: screenFadeIn 200ms ease both;
+}
+
+.screen.hidden {
+  display: none;
+}
+
+@keyframes screenFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.screen-content {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 32px 20px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ----- Utility Classes ----- */
+.hidden {
+  display: none !important;
+}
+
+.error-msg {
+  color: var(--incorrect);
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 10px 14px;
+  background: var(--incorrect-light);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 59, 48, 0.2);
+}
+
+/* ----- Buttons ----- */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+  box-shadow: 0 2px 8px rgba(91, 79, 207, 0.3);
+  white-space: nowrap;
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+  box-shadow: 0 4px 16px rgba(91, 79, 207, 0.4);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 4px rgba(91, 79, 207, 0.3);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface);
+  color: var(--primary);
+  border: 2px solid var(--primary);
+  border-radius: var(--radius-sm);
+  padding: 10px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition), transform var(--transition);
+}
+
+.btn-secondary:hover {
+  background: var(--primary-light);
+  transform: translateY(-1px);
+}
+
+.btn-secondary:active {
+  transform: translateY(0);
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: var(--text-muted);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 24px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition), border-color var(--transition);
+}
+
+.btn-ghost:hover {
+  background: var(--surface);
+  color: var(--text);
+  border-color: #b0b0b8;
+}
+
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  color: var(--primary);
+  border: none;
+  padding: 6px 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color var(--transition);
+  flex-shrink: 0;
+}
+
+.btn-back:hover {
+  color: var(--primary-hover);
+}
+
+.btn-large {
+  width: 100%;
+  padding: 16px 24px;
+  font-size: 1.125rem;
+  border-radius: var(--radius);
+}
+
+.btn-sm {
+  padding: 6px 14px;
+  font-size: 0.875rem;
+  border-radius: var(--radius-sm);
+}
+
+.btn-danger {
+  color: var(--incorrect) !important;
+  border-color: rgba(255, 59, 48, 0.3) !important;
+}
+
+.btn-danger:hover {
+  background: var(--incorrect-light) !important;
+  border-color: var(--incorrect) !important;
+}
+
+/* ----- Users Screen ----- */
+.brand {
+  text-align: center;
+  padding: 16px 0 8px;
+}
+
+.brand h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--primary);
+  letter-spacing: -0.5px;
+}
+
+.subtitle {
+  color: var(--text-muted);
+  font-size: 1rem;
+  margin-top: 6px;
+}
+
+.no-users {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+  padding: 20px 0;
+}
+
+.user-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  box-shadow: var(--shadow);
+  transition: box-shadow var(--transition), border-color var(--transition);
+}
+
+.user-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: #c0c0c8;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.user-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.user-games {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+.user-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.divider-text {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.divider-text::before,
+.divider-text::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.add-user-form {
+  display: flex;
+  gap: 10px;
+}
+
+.add-user-form input {
+  flex: 1;
+  padding: 12px 14px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  background: var(--surface);
+  color: var(--text);
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.add-user-form input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(91, 79, 207, 0.15);
+}
+
+.add-user-form input::placeholder {
+  color: var(--text-muted);
+}
+
+/* ----- Setup Screen ----- */
+.screen-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 4px;
+}
+
+.current-user-label {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: var(--primary-light);
+  color: var(--primary);
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+#screen-setup h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.settings-group {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  box-shadow: var(--shadow);
+}
+
+.settings-group h3 {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.toggle-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.toggle-btn {
+  padding: 8px 16px;
+  border: 2px solid var(--border);
+  border-radius: 20px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition), border-color var(--transition), box-shadow var(--transition);
+  white-space: nowrap;
+}
+
+.toggle-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-light);
+}
+
+.toggle-btn.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(91, 79, 207, 0.25);
+}
+
+.best-score-display {
+  text-align: center;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  padding: 10px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+}
+
+/* ----- Game Screen ----- */
+#screen-game {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--bg);
+}
+
+#screen-game.hidden {
+  display: none;
+}
+
+.game-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.game-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 64px;
+}
+
+.game-stat .stat-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+#game-score,
+#game-streak {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1;
+}
+
+#game-timer-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--primary-light);
+  border: 3px solid var(--primary);
+  transition: background var(--transition), border-color var(--transition);
+}
+
+#game-timer-wrap.timer-warning {
+  background: var(--timer-warning-light);
+  border-color: var(--timer-warning);
+  animation: timerPulse 1s ease-in-out infinite;
+}
+
+@keyframes timerPulse {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.06); }
+}
+
+#game-timer {
+  font-size: 1.625rem;
+  font-weight: 800;
+  color: var(--primary);
+  line-height: 1;
+  transition: color var(--transition);
+}
+
+#game-timer-wrap.timer-warning #game-timer {
+  color: var(--timer-warning);
+}
+
+.game-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 20px 32px;
+  gap: 32px;
+  max-width: 520px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+#game-prompt-wrap {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+#game-prompt {
+  line-height: 1.1;
+  transition: transform 120ms ease, opacity 120ms ease;
+}
+
+#game-prompt.prompt-character {
+  font-size: 6rem;
+  color: var(--text);
+  font-weight: 400;
+}
+
+#game-prompt.prompt-text {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.02em;
+}
+
+#game-prompt.prompt-vocab {
+  font-size: 2.25rem;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.02em;
+}
+
+.direction-hint {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* Options Grid (1 column, full-width tiles) */
+.options-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  width: 100%;
+}
+
+.option-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 72px;
+  padding: 16px 24px;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+  box-shadow: var(--shadow);
+  word-break: break-word;
+  text-align: center;
+}
+
+.option-btn:hover:not(:disabled) {
+  border-color: var(--primary);
+  background: var(--primary-light);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.option-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.option-btn:disabled {
+  cursor: default;
+}
+
+.option-btn.option-character {
+  font-size: 2.5rem;
+  font-weight: 400;
+  color: var(--text);
+  line-height: 1.1;
+}
+
+.option-btn.option-text {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.option-btn.correct {
+  background: var(--correct-light);
+  border-color: var(--correct);
+  box-shadow: 0 0 0 3px rgba(52, 199, 89, 0.2);
+  animation: correctPop 300ms ease both;
+}
+
+.option-btn.incorrect {
+  background: var(--incorrect-light);
+  border-color: var(--incorrect);
+  box-shadow: 0 0 0 3px rgba(255, 59, 48, 0.2);
+  animation: incorrectShake 400ms ease both;
+}
+
+@keyframes correctPop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes incorrectShake {
+  0%   { transform: translateX(0); }
+  20%  { transform: translateX(-6px); }
+  40%  { transform: translateX(6px); }
+  60%  { transform: translateX(-4px); }
+  80%  { transform: translateX(4px); }
+  100% { transform: translateX(0); }
+}
+
+.key-hint {
+  position: absolute;
+  top: 6px;
+  left: 8px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  opacity: 0.6;
+  line-height: 1;
+}
+
+/* ----- Summary Screen ----- */
+#screen-summary h2 {
+  font-size: 1.875rem;
+  font-weight: 800;
+  text-align: center;
+  color: var(--text);
+}
+
+.summary-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 10px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Score card spans full width in top row */
+.summary-stats .stat-card:first-child {
+  grid-column: 1 / -1;
+  padding: 20px;
+}
+
+.summary-stats .stat-card:first-child .stat-value {
+  font-size: 3rem;
+}
+
+.stat-card .stat-value {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1;
+}
+
+.stat-card .stat-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+.stat-card.correct-card .stat-value {
+  color: var(--correct);
+}
+
+.stat-card.incorrect-card .stat-value {
+  color: var(--incorrect);
+}
+
+.missed-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  box-shadow: var(--shadow);
+}
+
+.missed-section h3 {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+}
+
+.missed-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.missed-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--incorrect-light);
+  border: 1px solid rgba(255, 59, 48, 0.2);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 0.9375rem;
+}
+
+.missed-char {
+  font-size: 1.375rem;
+  line-height: 1;
+  color: var(--text);
+}
+
+.missed-arrow {
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+}
+
+.missed-reading {
+  font-weight: 600;
+  color: var(--text);
+  font-size: 0.9375rem;
+}
+
+.summary-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.summary-actions .btn-primary,
+.summary-actions .btn-secondary,
+.summary-actions .btn-ghost {
+  width: 100%;
+  padding: 14px;
+  font-size: 1rem;
+  border-radius: var(--radius);
+}
+
+/* ----- Mobile Responsive ----- */
+@media (max-width: 480px) {
+  .screen-content {
+    padding: 20px 16px 40px;
+    gap: 16px;
+  }
+
+  .brand h1 {
+    font-size: 2rem;
+  }
+
+  .game-header {
+    padding: 12px 16px;
+  }
+
+  #game-timer-wrap {
+    width: 60px;
+    height: 60px;
+  }
+
+  #game-timer {
+    font-size: 1.375rem;
+  }
+
+  #game-score,
+  #game-streak {
+    font-size: 1.5rem;
+  }
+
+  .game-body {
+    padding: 20px 14px 24px;
+    gap: 24px;
+  }
+
+  #game-prompt.prompt-character {
+    font-size: 5rem;
+  }
+
+  #game-prompt.prompt-text {
+    font-size: 2rem;
+  }
+
+  .option-btn.option-character {
+    font-size: 2rem;
+  }
+
+  .option-btn.option-text {
+    font-size: 1rem;
+  }
+
+  .options-grid {
+    gap: 8px;
+  }
+
+  .option-btn {
+    min-height: 64px;
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+  }
+
+  .toggle-btn {
+    font-size: 0.875rem;
+    padding: 7px 12px;
+  }
+
+  .summary-stats {
+    gap: 8px;
+  }
+
+  .stat-card .stat-value {
+    font-size: 1.5rem;
+  }
+
+  .summary-stats .stat-card:first-child .stat-value {
+    font-size: 2.5rem;
+  }
+
+  .add-user-form {
+    flex-direction: column;
+  }
+
+  .add-user-form .btn-primary {
+    width: 100%;
+  }
+}
+
+/* =========================================================
+   Stats Screen
+   ========================================================= */
+
+.stats-content {
+  max-width: 860px;
+  padding-bottom: 2rem;
+}
+
+/* Setup screen action row */
+.setup-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.setup-actions .btn-primary {
+  flex: 1;
+}
+
+/* Summary bar */
+.stats-summary-bar {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+}
+
+.stats-summary-bar strong {
+  color: var(--text);
+}
+
+/* Legend */
+.stats-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.75rem;
+}
+
+.legend-item {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+/* Tabs */
+.stats-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 0;
+}
+
+.stats-tab {
+  padding: 0.5rem 1.25rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: color var(--transition), border-color var(--transition);
+}
+
+.stats-tab:hover {
+  color: var(--primary);
+}
+
+.stats-tab.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+/* Character grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 0.5rem;
+}
+
+.stat-cell {
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.4rem 0.4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  border: 1px solid transparent;
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.stat-cell:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.stat-char {
+  font-size: 1.6rem;
+  line-height: 1;
+  font-weight: 400;
+}
+
+.stat-reading {
+  font-size: 0.65rem;
+  color: inherit;
+  opacity: 0.7;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.stat-counts {
+  font-size: 0.65rem;
+  font-weight: 600;
+  opacity: 0.8;
+}
+
+.stat-bar-wrap {
+  width: 100%;
+  height: 3px;
+  background: rgba(0,0,0,0.12);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 2px;
+}
+
+.stat-bar {
+  height: 100%;
+  border-radius: 2px;
+  background: currentColor;
+  transition: width 0.4s ease;
+}
+
+.stat-pct {
+  font-size: 0.65rem;
+  font-weight: 700;
+  opacity: 0.9;
+}
+
+/* Vocabulary words are wider — shrink the character text */
+.stat-cell--vocab .stat-char {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  word-break: break-all;
+  text-align: center;
+}
+
+/* Accuracy color classes */
+.unseen {
+  background: #f0f0f2;
+  color: #999;
+  border-color: #e0e0e5;
+}
+
+.acc-low {
+  background: #fee2e2;
+  color: #b91c1c;
+  border-color: #fecaca;
+}
+.acc-low .stat-bar { background: #ef4444; }
+
+.acc-mid-low {
+  background: #fef9c3;
+  color: #92400e;
+  border-color: #fde68a;
+}
+.acc-mid-low .stat-bar { background: #f59e0b; }
+
+.acc-mid-high {
+  background: #dcfce7;
+  color: #166534;
+  border-color: #bbf7d0;
+}
+.acc-mid-high .stat-bar { background: #22c55e; }
+
+.acc-high {
+  background: #bbf7d0;
+  color: #14532d;
+  border-color: #86efac;
+}
+.acc-high .stat-bar { background: #16a34a; }
+
+/* Legend uses same classes */
+.legend-item.acc-high     { background: #bbf7d0; color: #14532d; }
+.legend-item.acc-mid-high { background: #dcfce7; color: #166534; }
+.legend-item.acc-mid-low  { background: #fef9c3; color: #92400e; }
+.legend-item.acc-low      { background: #fee2e2; color: #b91c1c; }
+.legend-item.unseen       { background: #f0f0f2; color: #999; }
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: repeat(auto-fill, minmax(68px, 1fr));
+    gap: 0.375rem;
+  }
+
+  .stat-char {
+    font-size: 1.3rem;
+  }
+
+  .setup-actions {
+    flex-direction: column;
+  }
+}
+
+/* =========================================================
+   Dark Mode — Overrides for hardcoded colors
+   ========================================================= */
+
+html[data-theme="dark"] .btn-ghost:hover {
+  border-color: #48485c;
+}
+
+html[data-theme="dark"] .user-card:hover {
+  border-color: #3e3e52;
+}
+
+/* Stats cell overrides */
+html[data-theme="dark"] .unseen {
+  background: #1e1e2a;
+  color: #55556a;
+  border-color: #2a2a3a;
+}
+
+html[data-theme="dark"] .acc-low {
+  background: #2e1414;
+  color: #fca5a5;
+  border-color: #4a1e1e;
+}
+html[data-theme="dark"] .acc-low .stat-bar { background: #f87171; }
+
+html[data-theme="dark"] .acc-mid-low {
+  background: #2a200a;
+  color: #fcd34d;
+  border-color: #463808;
+}
+html[data-theme="dark"] .acc-mid-low .stat-bar { background: #fbbf24; }
+
+html[data-theme="dark"] .acc-mid-high {
+  background: #0e2418;
+  color: #86efac;
+  border-color: #164430;
+}
+html[data-theme="dark"] .acc-mid-high .stat-bar { background: #4ade80; }
+
+html[data-theme="dark"] .acc-high {
+  background: #0a2e18;
+  color: #4ade80;
+  border-color: #145228;
+}
+html[data-theme="dark"] .acc-high .stat-bar { background: #22c55e; }
+
+html[data-theme="dark"] .legend-item.acc-high     { background: #0a2e18; color: #4ade80; }
+html[data-theme="dark"] .legend-item.acc-mid-high { background: #0e2418; color: #86efac; }
+html[data-theme="dark"] .legend-item.acc-mid-low  { background: #2a200a; color: #fcd34d; }
+html[data-theme="dark"] .legend-item.acc-low      { background: #2e1414; color: #fca5a5; }
+html[data-theme="dark"] .legend-item.unseen       { background: #1e1e2a; color: #55556a; }
+
+/* =========================================================
+   Theme Toggle Button
+   ========================================================= */
+
+#btn-theme-toggle {
+  position: fixed;
+  top: 14px;
+  right: 16px;
+  z-index: 100;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: background var(--transition), border-color var(--transition), transform var(--transition);
+  line-height: 1;
+}
+
+#btn-theme-toggle:hover {
+  transform: scale(1.1);
+  border-color: var(--primary);
+}
+
+</style>
+</head>
+<body>
+<button id="btn-theme-toggle" title="Toggle dark mode">🌙</button>
+<div id="app">
+
+  <!-- Screen: Users -->
+  <div id="screen-users" class="screen">
+    <div class="screen-content">
+      <div class="brand">
+        <h1>⭐ ZeroLango ⭐</h1>
+        <p class="subtitle">Japanese character matching game</p>
+      </div>
+      <div id="users-list"></div>
+      <div class="divider-text">or</div>
+      <div class="add-user-form">
+        <input type="text" id="new-username" placeholder="New username…" maxlength="20" autocomplete="off">
+        <button id="btn-add-user" class="btn-primary">Add User</button>
+      </div>
+      <p id="users-error" class="error-msg hidden"></p>
+    </div>
+  </div>
+
+  <!-- Screen: Setup -->
+  <div id="screen-setup" class="screen hidden">
+    <div class="screen-content">
+      <div class="screen-nav">
+        <button id="btn-back-users" class="btn-back">← Users</button>
+        <span id="setup-username-label" class="current-user-label"></span>
+      </div>
+      <h2>Game Settings</h2>
+      <div class="settings-group">
+        <h3>🤖 Mode</h3>
+        <div class="toggle-group" id="mode-options">
+          <button class="toggle-btn active" data-value="hiragana">Hiragana</button>
+          <button class="toggle-btn" data-value="katakana">Katakana</button>
+          <button class="toggle-btn" data-value="kanji">Kanji</button>
+          <button class="toggle-btn" data-value="mixed">Mixed</button>
+          <button class="toggle-btn" data-value="vocabulary">Vocabulary</button>
+        </div>
+      </div>
+      <div class="settings-group">
+        <h3>🎯 Direction</h3>
+        <div class="toggle-group" id="direction-options">
+          <button class="toggle-btn active" data-value="roman-to-japanese">Roman → Japanese</button>
+          <button class="toggle-btn" data-value="japanese-to-roman">Japanese → Roman</button>
+          <button class="toggle-btn" data-value="both">Both</button>
+        </div>
+      </div>
+      <div class="settings-group">
+        <h3>⏳ Duration</h3>
+        <div class="toggle-group" id="duration-options">
+          <button class="toggle-btn" data-value="30">30s</button>
+          <button class="toggle-btn active" data-value="60">60s</button>
+          <button class="toggle-btn" data-value="90">90s</button>
+          <button class="toggle-btn" data-value="120">120s</button>
+        </div>
+      </div>
+      <div id="setup-best-score" class="best-score-display"></div>
+      <div class="setup-actions">
+        <button id="btn-start-game" class="btn-primary btn-large">Start Game</button>
+        <button id="btn-view-stats" class="btn-secondary">View Stats</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Screen: Game -->
+  <div id="screen-game" class="screen hidden">
+    <div class="game-header">
+      <div class="game-stat">
+        <span class="stat-label">Score</span>
+        <span id="game-score">0</span>
+      </div>
+      <div id="game-timer-wrap">
+        <div id="game-timer">60</div>
+      </div>
+      <div class="game-stat">
+        <span class="stat-label">Streak</span>
+        <span id="game-streak">0</span>
+      </div>
+    </div>
+    <div class="game-body">
+      <div id="game-prompt-wrap">
+        <div id="game-prompt"></div>
+        <div id="game-direction-hint" class="direction-hint"></div>
+      </div>
+      <div id="game-options" class="options-grid"></div>
+    </div>
+  </div>
+
+  <!-- Screen: Stats -->
+  <div id="screen-stats" class="screen hidden">
+    <div class="screen-content stats-content">
+      <div class="screen-nav">
+        <button id="btn-back-from-stats" class="btn-back">← Setup</button>
+        <span id="stats-username-label" class="current-user-label"></span>
+      </div>
+      <h2>Character Stats</h2>
+      <div id="stats-summary" class="stats-summary-bar"></div>
+      <div class="stats-legend">
+        <span class="legend-item acc-high">≥80% mastered</span>
+        <span class="legend-item acc-mid-high">60–79%</span>
+        <span class="legend-item acc-mid-low">40–59%</span>
+        <span class="legend-item acc-low">&lt;40% needs work</span>
+        <span class="legend-item unseen">unseen</span>
+      </div>
+      <div class="stats-tabs">
+        <button class="stats-tab active" data-script="hiragana">Hiragana</button>
+        <button class="stats-tab" data-script="katakana">Katakana</button>
+        <button class="stats-tab" data-script="kanji">Kanji</button>
+        <button class="stats-tab" data-script="vocabulary">Vocabulary</button>
+      </div>
+      <div id="stats-grid" class="stats-grid"></div>
+    </div>
+  </div>
+
+  <!-- Screen: Summary -->
+  <div id="screen-summary" class="screen hidden">
+    <div class="screen-content">
+      <h2>Round Complete!</h2>
+      <div id="summary-stats" class="summary-stats"></div>
+      <div id="missed-section" class="missed-section hidden">
+        <h3>Missed Items</h3>
+        <div id="missed-list" class="missed-list"></div>
+      </div>
+      <div class="summary-actions">
+        <button id="btn-play-again" class="btn-primary">Play Again</button>
+        <button id="btn-change-settings" class="btn-secondary">Change Settings</button>
+        <button id="btn-main-menu" class="btn-ghost">Main Menu</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const HIRAGANA = [
+  // Basic vowels
+  { character: 'あ', reading: 'a' },
+  { character: 'い', reading: 'i' },
+  { character: 'う', reading: 'u' },
+  { character: 'え', reading: 'e' },
+  { character: 'お', reading: 'o' },
+  // K-row
+  { character: 'か', reading: 'ka' },
+  { character: 'き', reading: 'ki' },
+  { character: 'く', reading: 'ku' },
+  { character: 'け', reading: 'ke' },
+  { character: 'こ', reading: 'ko' },
+  // S-row
+  { character: 'さ', reading: 'sa' },
+  { character: 'し', reading: 'shi' },
+  { character: 'す', reading: 'su' },
+  { character: 'せ', reading: 'se' },
+  { character: 'そ', reading: 'so' },
+  // T-row
+  { character: 'た', reading: 'ta' },
+  { character: 'ち', reading: 'chi' },
+  { character: 'つ', reading: 'tsu' },
+  { character: 'て', reading: 'te' },
+  { character: 'と', reading: 'to' },
+  // N-row
+  { character: 'な', reading: 'na' },
+  { character: 'に', reading: 'ni' },
+  { character: 'ぬ', reading: 'nu' },
+  { character: 'ね', reading: 'ne' },
+  { character: 'の', reading: 'no' },
+  // H-row
+  { character: 'は', reading: 'ha' },
+  { character: 'ひ', reading: 'hi' },
+  { character: 'ふ', reading: 'fu' },
+  { character: 'へ', reading: 'he' },
+  { character: 'ほ', reading: 'ho' },
+  // M-row
+  { character: 'ま', reading: 'ma' },
+  { character: 'み', reading: 'mi' },
+  { character: 'む', reading: 'mu' },
+  { character: 'め', reading: 'me' },
+  { character: 'も', reading: 'mo' },
+  // Y-row
+  { character: 'や', reading: 'ya' },
+  { character: 'ゆ', reading: 'yu' },
+  { character: 'よ', reading: 'yo' },
+  // R-row
+  { character: 'ら', reading: 'ra' },
+  { character: 'り', reading: 'ri' },
+  { character: 'る', reading: 'ru' },
+  { character: 'れ', reading: 're' },
+  { character: 'ろ', reading: 'ro' },
+  // W-row + N
+  { character: 'わ', reading: 'wa' },
+  { character: 'を', reading: 'wo' },
+  { character: 'ん', reading: 'n' },
+  // Dakuten (voiced) — G-row
+  { character: 'が', reading: 'ga' },
+  { character: 'ぎ', reading: 'gi' },
+  { character: 'ぐ', reading: 'gu' },
+  { character: 'げ', reading: 'ge' },
+  { character: 'ご', reading: 'go' },
+  // Z-row
+  { character: 'ざ', reading: 'za' },
+  { character: 'じ', reading: 'ji' },
+  { character: 'ず', reading: 'zu' },
+  { character: 'ぜ', reading: 'ze' },
+  { character: 'ぞ', reading: 'zo' },
+  // D-row
+  { character: 'だ', reading: 'da' },
+  { character: 'で', reading: 'de' },
+  { character: 'ど', reading: 'do' },
+  // B-row
+  { character: 'ば', reading: 'ba' },
+  { character: 'び', reading: 'bi' },
+  { character: 'ぶ', reading: 'bu' },
+  { character: 'べ', reading: 'be' },
+  { character: 'ぼ', reading: 'bo' },
+  // Handakuten (semi-voiced) — P-row
+  { character: 'ぱ', reading: 'pa' },
+  { character: 'ぴ', reading: 'pi' },
+  { character: 'ぷ', reading: 'pu' },
+  { character: 'ぺ', reading: 'pe' },
+  { character: 'ぽ', reading: 'po' },
+];
+
+const VOCABULARY = [
+  { character: 'こんにちは',       reading: 'hello' },
+  { character: 'ありがとう',       reading: 'thank you' },
+  { character: 'すみません',       reading: 'excuse me' },
+  { character: 'おはようございます', reading: 'good morning' },
+  { character: 'こんばんは',       reading: 'good evening' },
+  { character: 'さようなら',       reading: 'goodbye' },
+  { character: 'はい',            reading: 'yes' },
+  { character: 'いいえ',          reading: 'no' },
+  { character: 'ごめんなさい',     reading: 'I\'m sorry' },
+  { character: 'おねがいします',   reading: 'please' },
+  { character: 'わかりました',     reading: 'understood' },
+  { character: 'いくら',          reading: 'how much' },
+  { character: 'どこ',            reading: 'where' },
+  { character: 'だれ',            reading: 'who' },
+  { character: 'なに',            reading: 'what' },
+  { character: 'いつ',            reading: 'when' },
+  { character: 'なぜ',            reading: 'why' },
+  { character: 'おいしい',        reading: 'delicious' },
+  { character: 'たかい',          reading: 'expensive' },
+  { character: 'やすい',          reading: 'cheap' },
+  { character: 'おおきい',        reading: 'big' },
+  { character: 'ちいさい',        reading: 'small' },
+  { character: 'あたらしい',      reading: 'new' },
+  { character: 'ふるい',          reading: 'old' },
+  { character: 'はやい',          reading: 'fast' },
+  { character: 'おそい',          reading: 'slow' },
+  { character: 'あつい',          reading: 'hot' },
+  { character: 'さむい',          reading: 'cold' },
+  { character: 'ごはん',          reading: 'rice meal' },
+  { character: 'パン',            reading: 'bread' },
+  { character: 'にく',            reading: 'meat' },
+  { character: 'やさい',          reading: 'vegetable' },
+  { character: 'くだもの',        reading: 'fruit' },
+  { character: 'おちゃ',          reading: 'green tea' },
+  { character: 'コーヒー',        reading: 'coffee' },
+  { character: 'えき',            reading: 'train station' },
+  { character: 'みせ',            reading: 'shop' },
+  { character: 'レストラン',      reading: 'restaurant' },
+  { character: 'ホテル',          reading: 'hotel' },
+  { character: 'としょかん',      reading: 'library' },
+  { character: 'しごと',          reading: 'work' },
+  { character: 'でんわ',          reading: 'telephone' },
+  { character: 'じかん',          reading: 'time' },
+  { character: 'まいにち',        reading: 'every day' },
+  { character: 'きょう',          reading: 'today' },
+  { character: 'あした',          reading: 'tomorrow' },
+  { character: 'きのう',          reading: 'yesterday' },
+  { character: 'ともだち',        reading: 'friend' },
+  { character: 'かぞく',          reading: 'family' },
+  { character: 'せんせい',        reading: 'teacher' },
+  { character: 'がくせい',        reading: 'student' },
+  { character: 'かいしゃ',        reading: 'company' },
+  { character: 'でんしゃ',        reading: 'train' },
+  { character: 'くるま',          reading: 'car' },
+  { character: 'ひこうき',        reading: 'airplane' },
+  { character: 'びょういん',      reading: 'hospital' },
+  { character: 'ゆうびんきょく',  reading: 'post office' },
+  { character: 'ぎんこう',        reading: 'bank' },
+  { character: 'きって',          reading: 'stamp' },
+  { character: 'てがみ',          reading: 'letter' },
+];
+
+const KATAKANA = [
+  { character: 'ア', reading: 'a' },
+  { character: 'イ', reading: 'i' },
+  { character: 'ウ', reading: 'u' },
+  { character: 'エ', reading: 'e' },
+  { character: 'オ', reading: 'o' },
+  { character: 'カ', reading: 'ka' },
+  { character: 'キ', reading: 'ki' },
+  { character: 'ク', reading: 'ku' },
+  { character: 'ケ', reading: 'ke' },
+  { character: 'コ', reading: 'ko' },
+  { character: 'サ', reading: 'sa' },
+  { character: 'シ', reading: 'shi' },
+  { character: 'ス', reading: 'su' },
+  { character: 'セ', reading: 'se' },
+  { character: 'ソ', reading: 'so' },
+  { character: 'タ', reading: 'ta' },
+  { character: 'チ', reading: 'chi' },
+  { character: 'ツ', reading: 'tsu' },
+  { character: 'テ', reading: 'te' },
+  { character: 'ト', reading: 'to' },
+  { character: 'ナ', reading: 'na' },
+  { character: 'ニ', reading: 'ni' },
+  { character: 'ヌ', reading: 'nu' },
+  { character: 'ネ', reading: 'ne' },
+  { character: 'ノ', reading: 'no' },
+  { character: 'ハ', reading: 'ha' },
+  { character: 'ヒ', reading: 'hi' },
+  { character: 'フ', reading: 'fu' },
+  { character: 'ヘ', reading: 'he' },
+  { character: 'ホ', reading: 'ho' },
+  { character: 'マ', reading: 'ma' },
+  { character: 'ミ', reading: 'mi' },
+  { character: 'ム', reading: 'mu' },
+  { character: 'メ', reading: 'me' },
+  { character: 'モ', reading: 'mo' },
+  { character: 'ヤ', reading: 'ya' },
+  { character: 'ユ', reading: 'yu' },
+  { character: 'ヨ', reading: 'yo' },
+  { character: 'ラ', reading: 'ra' },
+  { character: 'リ', reading: 'ri' },
+  { character: 'ル', reading: 'ru' },
+  { character: 'レ', reading: 're' },
+  { character: 'ロ', reading: 'ro' },
+  { character: 'ワ', reading: 'wa' },
+  { character: 'ヲ', reading: 'wo' },
+  { character: 'ン', reading: 'n' },
+  // Dakuten — G-row
+  { character: 'ガ', reading: 'ga' },
+  { character: 'ギ', reading: 'gi' },
+  { character: 'グ', reading: 'gu' },
+  { character: 'ゲ', reading: 'ge' },
+  { character: 'ゴ', reading: 'go' },
+  // Z-row
+  { character: 'ザ', reading: 'za' },
+  { character: 'ジ', reading: 'ji' },
+  { character: 'ズ', reading: 'zu' },
+  { character: 'ゼ', reading: 'ze' },
+  { character: 'ゾ', reading: 'zo' },
+  // D-row
+  { character: 'ダ', reading: 'da' },
+  { character: 'デ', reading: 'de' },
+  { character: 'ド', reading: 'do' },
+  // B-row
+  { character: 'バ', reading: 'ba' },
+  { character: 'ビ', reading: 'bi' },
+  { character: 'ブ', reading: 'bu' },
+  { character: 'ベ', reading: 'be' },
+  { character: 'ボ', reading: 'bo' },
+  // Handakuten — P-row
+  { character: 'パ', reading: 'pa' },
+  { character: 'ピ', reading: 'pi' },
+  { character: 'プ', reading: 'pu' },
+  { character: 'ペ', reading: 'pe' },
+  { character: 'ポ', reading: 'po' },
+];
+
+const KANJI = [
+  { character: '水', reading: 'water' },
+  { character: '火', reading: 'fire' },
+  { character: '山', reading: 'mountain' },
+  { character: '川', reading: 'river' },
+  { character: '木', reading: 'tree' },
+  { character: '花', reading: 'flower' },
+  { character: '犬', reading: 'dog' },
+  { character: '猫', reading: 'cat' },
+  { character: '鳥', reading: 'bird' },
+  { character: '魚', reading: 'fish' },
+  { character: '人', reading: 'person' },
+  { character: '日', reading: 'sun' },
+  { character: '月', reading: 'moon' },
+  { character: '年', reading: 'year' },
+  { character: '時', reading: 'time' },
+  { character: '大', reading: 'big' },
+  { character: '小', reading: 'small' },
+  { character: '上', reading: 'up' },
+  { character: '下', reading: 'down' },
+  { character: '中', reading: 'inside' },
+  { character: '右', reading: 'right' },
+  { character: '左', reading: 'left' },
+  { character: '前', reading: 'front' },
+  { character: '後', reading: 'behind' },
+  { character: '今', reading: 'now' },
+  { character: '食', reading: 'eat' },
+  { character: '飲', reading: 'drink' },
+  { character: '見', reading: 'see' },
+  { character: '聞', reading: 'hear' },
+  { character: '話', reading: 'speak' },
+  { character: '書', reading: 'write' },
+  { character: '読', reading: 'read' },
+  { character: '行', reading: 'go' },
+  { character: '来', reading: 'come' },
+  { character: '帰', reading: 'return' },
+  { character: '買', reading: 'buy' },
+  { character: '学', reading: 'study' },
+  { character: '校', reading: 'school' },
+  { character: '生', reading: 'life' },
+  { character: '男', reading: 'man' },
+  { character: '女', reading: 'woman' },
+  { character: '子', reading: 'child' },
+  { character: '友', reading: 'friend' },
+  { character: '家', reading: 'home' },
+  { character: '車', reading: 'car' },
+  { character: '電', reading: 'electric' },
+  { character: '気', reading: 'feeling' },
+  { character: '本', reading: 'book' },
+  { character: '語', reading: 'language' },
+  { character: '国', reading: 'country' },
+];
+
+const Storage = (() => {
+  const KEY = 'zerolango_v1';
+
+  function load() {
+    try {
+      return JSON.parse(localStorage.getItem(KEY)) || { users: {}, lastUser: null };
+    } catch (e) {
+      return { users: {}, lastUser: null };
+    }
+  }
+
+  function save(data) {
+    localStorage.setItem(KEY, JSON.stringify(data));
+  }
+
+  function getUsers() {
+    return Object.values(load().users);
+  }
+
+  function getLastUser() {
+    const data = load();
+    return data.lastUser ? (data.users[data.lastUser] || null) : null;
+  }
+
+  function getUser(username) {
+    return load().users[username] || null;
+  }
+
+  function userExists(username) {
+    return !!load().users[username];
+  }
+
+  function createUser(username) {
+    const data = load();
+    if (data.users[username]) return null;
+    data.users[username] = {
+      username,
+      totalGamesPlayed: 0,
+      bestScores: {
+        hiragana:   { '30': 0, '60': 0, '90': 0, '120': 0 },
+        katakana:   { '30': 0, '60': 0, '90': 0, '120': 0 },
+        kanji:      { '30': 0, '60': 0, '90': 0, '120': 0 },
+        mixed:      { '30': 0, '60': 0, '90': 0, '120': 0 },
+        vocabulary: { '30': 0, '60': 0, '90': 0, '120': 0 },
+      },
+      lastMissed: [],
+      lastSettings: { mode: 'hiragana', direction: 'roman-to-japanese', duration: 60 },
+    };
+    data.lastUser = username;
+    save(data);
+    return data.users[username];
+  }
+
+  function setLastUser(username) {
+    const data = load();
+    if (data.users[username]) {
+      data.lastUser = username;
+      save(data);
+    }
+  }
+
+  function deleteUser(username) {
+    const data = load();
+    delete data.users[username];
+    if (data.lastUser === username) {
+      const remaining = Object.keys(data.users);
+      data.lastUser = remaining.length > 0 ? remaining[0] : null;
+    }
+    save(data);
+  }
+
+  function saveGameResult(username, mode, duration, score, missedItems) {
+    const data = load();
+    const user = data.users[username];
+    if (!user) return;
+    user.totalGamesPlayed++;
+    const key = String(duration);
+    if (!user.bestScores[mode]) user.bestScores[mode] = { '60': 0, '90': 0, '120': 0 };
+    if (score > (user.bestScores[mode][key] || 0)) {
+      user.bestScores[mode][key] = score;
+    }
+    missedItems.forEach(function(item) {
+      const idx = user.lastMissed.findIndex(function(m) { return m.character === item.character; });
+      if (idx !== -1) user.lastMissed.splice(idx, 1);
+      user.lastMissed.unshift(item);
+    });
+    user.lastMissed = user.lastMissed.slice(0, 20);
+    save(data);
+  }
+
+  function getBestScore(username, mode, duration) {
+    const user = getUser(username);
+    if (!user) return 0;
+    const scores = user.bestScores[mode];
+    return scores ? (scores[String(duration)] || 0) : 0;
+  }
+
+  function saveUserSettings(username, settings) {
+    const data = load();
+    const user = data.users[username];
+    if (!user) return;
+    user.lastSettings = settings;
+    save(data);
+  }
+
+  function updateCharStat(username, character, isCorrect) {
+    const data = load();
+    const user = data.users[username];
+    if (!user) return;
+    if (!user.charStats) user.charStats = {};
+    if (!user.charStats[character]) user.charStats[character] = { correct: 0, wrong: 0 };
+    if (isCorrect) {
+      user.charStats[character].correct++;
+    } else {
+      user.charStats[character].wrong++;
+    }
+    save(data);
+  }
+
+  function getCharStats(username) {
+    const user = getUser(username);
+    return (user && user.charStats) ? user.charStats : {};
+  }
+
+  return {
+    getUsers,
+    getLastUser,
+    getUser,
+    userExists,
+    createUser,
+    setLastUser,
+    deleteUser,
+    saveGameResult,
+    getBestScore,
+    updateCharStat,
+    getCharStats,
+    saveUserSettings,
+  };
+})();
+
+const GameEngine = (() => {
+  let pool = [];
+  let modeSetting = 'hiragana';
+  let directionSetting = 'roman-to-japanese';
+  let duration = 60;
+
+  let score = 0;
+  let correct = 0;
+  let wrong = 0;
+  let streak = 0;
+  let bestStreak = 0;
+  let timeLeft = 0;
+  let timerInterval = null;
+  let missedItems = [];
+
+  let currentItem = null;
+  let currentOptions = [];
+  let currentDirection = 'roman-to-japanese';
+
+  // Per-character accuracy stats (provided at game start)
+  let charStats = {};
+
+  // Callbacks
+  let onTick = null;
+  let onQuestion = null;
+  let onAnswer = null;
+  let onEnd = null;
+
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const tmp = a[i];
+      a[i] = a[j];
+      a[j] = tmp;
+    }
+    return a;
+  }
+
+  function buildPool(mode) {
+    if (mode === 'hiragana')   return HIRAGANA.map(function(item) { return Object.assign({}, item, { script: 'hiragana' }); });
+    if (mode === 'katakana')   return KATAKANA.map(function(item) { return Object.assign({}, item, { script: 'katakana' }); });
+    if (mode === 'kanji')      return KANJI.map(function(item) { return Object.assign({}, item, { script: 'kanji' }); });
+    if (mode === 'vocabulary') return VOCABULARY.map(function(item) { return Object.assign({}, item, { script: 'vocabulary' }); });
+    // mixed
+    return [].concat(
+      HIRAGANA.map(function(item) { return Object.assign({}, item, { script: 'hiragana' }); }),
+      KATAKANA.map(function(item) { return Object.assign({}, item, { script: 'katakana' }); }),
+      KANJI.map(function(item) { return Object.assign({}, item, { script: 'kanji' }); })
+    );
+  }
+
+  function getScriptPool(script) {
+    if (script === 'hiragana')   return HIRAGANA.map(function(item) { return Object.assign({}, item, { script: 'hiragana' }); });
+    if (script === 'katakana')   return KATAKANA.map(function(item) { return Object.assign({}, item, { script: 'katakana' }); });
+    if (script === 'kanji')      return KANJI.map(function(item) { return Object.assign({}, item, { script: 'kanji' }); });
+    if (script === 'vocabulary') return VOCABULARY.map(function(item) { return Object.assign({}, item, { script: 'vocabulary' }); });
+    return [];
+  }
+
+  function resolveDirection() {
+    if (directionSetting === 'both') {
+      return Math.random() < 0.5 ? 'roman-to-japanese' : 'japanese-to-roman';
+    }
+    return directionSetting;
+  }
+
+  function getWeight(character) {
+    const stat = charStats[character];
+    if (!stat || (stat.correct + stat.wrong) === 0) return 3;
+    const accuracy = stat.correct / (stat.correct + stat.wrong);
+    if (accuracy >= 0.8) return 1;
+    if (accuracy >= 0.6) return 2;
+    if (accuracy >= 0.4) return 3;
+    return 5;
+  }
+
+  function weightedPick(items) {
+    const weights = items.map(function(item) { return getWeight(item.character); });
+    const total = weights.reduce(function(s, w) { return s + w; }, 0);
+    let rand = Math.random() * total;
+    for (let i = 0; i < items.length; i++) {
+      rand -= weights[i];
+      if (rand <= 0) return items[i];
+    }
+    return items[items.length - 1];
+  }
+
+  function generateQuestion() {
+    currentItem = weightedPick(pool);
+    currentDirection = resolveDirection();
+
+    // Build 3 distractors from same script as correct item
+    const samePool = getScriptPool(currentItem.script);
+    const used = {};
+    used[currentItem.character] = true;
+    const distractors = [];
+
+    // Shuffle the pool to pick random distractors
+    const shuffled = shuffle(samePool);
+    for (let i = 0; i < shuffled.length && distractors.length < 3; i++) {
+      if (!used[shuffled[i].character]) {
+        used[shuffled[i].character] = true;
+        distractors.push(shuffled[i]);
+      }
+    }
+
+    currentOptions = shuffle([currentItem].concat(distractors));
+
+    return {
+      item: currentItem,
+      options: currentOptions,
+      direction: currentDirection,
+    };
+  }
+
+  function start(config) {
+    modeSetting      = config.mode;
+    directionSetting = config.direction;
+    duration         = config.duration;
+    charStats        = config.charStats   || {};
+    onTick           = config.onTick     || null;
+    onQuestion       = config.onQuestion || null;
+    onAnswer         = config.onAnswer   || null;
+    onEnd            = config.onEnd      || null;
+
+    pool        = buildPool(modeSetting);
+    score       = 0;
+    correct     = 0;
+    wrong       = 0;
+    streak      = 0;
+    bestStreak  = 0;
+    timeLeft    = duration;
+    missedItems = [];
+
+    startTimer();
+    const q = generateQuestion();
+    if (onQuestion) onQuestion(q);
+  }
+
+  function startTimer() {
+    clearInterval(timerInterval);
+    timerInterval = setInterval(function() {
+      timeLeft--;
+      if (onTick) onTick(timeLeft);
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        if (onEnd) onEnd(getResults());
+      }
+    }, 1000);
+  }
+
+  function submitAnswer(selectedItem) {
+    const isCorrect = selectedItem.character === currentItem.character;
+    if (isCorrect) {
+      score += 10;
+      correct++;
+      streak++;
+      if (streak > bestStreak) bestStreak = streak;
+    } else {
+      wrong++;
+      streak = 0;
+      missedItems.push(Object.assign({}, currentItem));
+    }
+    if (onAnswer) {
+      onAnswer({
+        isCorrect: isCorrect,
+        correctItem: currentItem,
+        selectedItem: selectedItem,
+        score: score,
+        streak: streak,
+      });
+    }
+    return isCorrect;
+  }
+
+  function nextQuestion() {
+    if (timeLeft <= 0) return null;
+    const q = generateQuestion();
+    if (onQuestion) onQuestion(q);
+    return q;
+  }
+
+  function getResults() {
+    return {
+      score: score,
+      correct: correct,
+      wrong: wrong,
+      accuracy: (correct + wrong) > 0
+        ? Math.round((correct / (correct + wrong)) * 100)
+        : 0,
+      bestStreak: bestStreak,
+      missedItems: missedItems.slice(),
+      mode: modeSetting,
+      duration: duration,
+    };
+  }
+
+  function stop() {
+    clearInterval(timerInterval);
+    timeLeft = 0;
+  }
+
+  function isRunning() {
+    return timeLeft > 0;
+  }
+
+  return { start: start, submitAnswer: submitAnswer, nextQuestion: nextQuestion, stop: stop, isRunning: isRunning, getResults: getResults };
+})();
+
+const App = (() => {
+  // --- State ---
+  let currentUser = null;
+  let gameSettings = {
+    mode: 'hiragana',
+    direction: 'roman-to-japanese',
+    duration: 60,
+  };
+  let gameActive = false;
+  let feedbackTimeout = null;
+  let lastQuestion = null;
+  let statsReturnScreen = 'setup';
+
+  // --- DOM refs (populated in init) ---
+  const el = {};
+
+  function init() {
+    // Cache DOM elements
+    el.screens = {
+      users:   document.getElementById('screen-users'),
+      setup:   document.getElementById('screen-setup'),
+      game:    document.getElementById('screen-game'),
+      summary: document.getElementById('screen-summary'),
+      stats:   document.getElementById('screen-stats'),
+    };
+
+    // Users screen
+    el.usersList     = document.getElementById('users-list');
+    el.newUsername   = document.getElementById('new-username');
+    el.btnAddUser    = document.getElementById('btn-add-user');
+    el.usersError    = document.getElementById('users-error');
+
+    // Setup screen
+    el.btnBackUsers  = document.getElementById('btn-back-users');
+    el.setupUsername = document.getElementById('setup-username-label');
+    el.modeOpts      = document.getElementById('mode-options');
+    el.directionOpts = document.getElementById('direction-options');
+    el.durationOpts  = document.getElementById('duration-options');
+    el.bestScoreDisp = document.getElementById('setup-best-score');
+    el.btnStartGame  = document.getElementById('btn-start-game');
+
+    // Game screen
+    el.gameScore     = document.getElementById('game-score');
+    el.gameTimer     = document.getElementById('game-timer');
+    el.gameTimerWrap = document.getElementById('game-timer-wrap');
+    el.gameStreak    = document.getElementById('game-streak');
+    el.gamePrompt    = document.getElementById('game-prompt');
+    el.directionHint = document.getElementById('game-direction-hint');
+    el.gameOptions   = document.getElementById('game-options');
+
+    // Summary screen
+    el.summaryStats      = document.getElementById('summary-stats');
+    el.missedSection     = document.getElementById('missed-section');
+    el.missedList        = document.getElementById('missed-list');
+    el.btnPlayAgain      = document.getElementById('btn-play-again');
+    el.btnChangeSettings = document.getElementById('btn-change-settings');
+    el.btnMainMenu       = document.getElementById('btn-main-menu');
+
+    // Stats screen
+    el.btnViewStats      = document.getElementById('btn-view-stats');
+    el.btnBackFromStats  = document.getElementById('btn-back-from-stats');
+    el.statsUsername     = document.getElementById('stats-username-label');
+    el.statsSummaryBar   = document.getElementById('stats-summary');
+    el.statsTabs         = document.getElementById('screen-stats').querySelectorAll('.stats-tab');
+    el.statsGrid         = document.getElementById('stats-grid');
+
+    el.btnThemeToggle = document.getElementById('btn-theme-toggle');
+
+    bindEvents();
+    initTheme();
+    showScreen('users');
+
+    // Auto-select last user if available
+    const last = Storage.getLastUser();
+    if (last) {
+      selectUser(last.username);
+    } else {
+      renderUsersList();
+    }
+  }
+
+  function bindEvents() {
+    // Users screen
+    el.btnAddUser.addEventListener('click', handleAddUser);
+    el.newUsername.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') handleAddUser();
+    });
+
+    // Setup screen
+    el.btnBackUsers.addEventListener('click', function() { showScreen('users'); });
+    el.btnStartGame.addEventListener('click', startGame);
+
+    // Toggle groups
+    setupToggleGroup(el.modeOpts, 'mode');
+    setupToggleGroup(el.directionOpts, 'direction');
+    setupToggleGroup(el.durationOpts, 'duration');
+
+    // Stats screen
+    el.btnViewStats.addEventListener('click', function() {
+      statsReturnScreen = 'setup';
+      showStatsScreen();
+    });
+    el.btnBackFromStats.addEventListener('click', function() { showScreen(statsReturnScreen); });
+    el.statsTabs.forEach(function(tab) {
+      tab.addEventListener('click', function() {
+        el.statsTabs.forEach(function(t) { t.classList.remove('active'); });
+        tab.classList.add('active');
+        renderStatsGrid(tab.dataset.script);
+      });
+    });
+
+    // Summary screen
+    el.btnPlayAgain.addEventListener('click', function() { startGame(); });
+    el.btnChangeSettings.addEventListener('click', function() { showScreen('setup'); });
+    el.btnMainMenu.addEventListener('click', function() {
+      showScreen('users');
+      renderUsersList();
+    });
+
+    el.btnThemeToggle.addEventListener('click', toggleTheme);
+
+    // Keyboard: 1-4 during game
+    document.addEventListener('keydown', handleKeydown);
+  }
+
+  function setupToggleGroup(groupEl, settingKey) {
+    groupEl.querySelectorAll('.toggle-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        groupEl.querySelectorAll('.toggle-btn').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        if (settingKey === 'duration') {
+          gameSettings[settingKey] = parseInt(btn.dataset.value, 10);
+        } else {
+          gameSettings[settingKey] = btn.dataset.value;
+        }
+        updateBestScoreDisplay();
+        if (currentUser) {
+          Storage.saveUserSettings(currentUser.username, {
+            mode:      gameSettings.mode,
+            direction: gameSettings.direction,
+            duration:  gameSettings.duration,
+          });
+        }
+      });
+    });
+  }
+
+  function handleKeydown(e) {
+    if (!gameActive) return;
+    const key = e.key;
+    if (key === '1' || key === '2' || key === '3' || key === '4') {
+      const idx = parseInt(key, 10) - 1;
+      const btns = el.gameOptions.querySelectorAll('.option-btn');
+      if (btns[idx] && !btns[idx].disabled) {
+        btns[idx].click();
+      }
+    }
+  }
+
+  // --- Theme ---
+  function initTheme() {
+    const saved = localStorage.getItem('zerolango_theme') || 'light';
+    applyTheme(saved);
+  }
+
+  function toggleTheme() {
+    const current = document.documentElement.getAttribute('data-theme') || 'light';
+    applyTheme(current === 'dark' ? 'light' : 'dark');
+  }
+
+  function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    el.btnThemeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+    localStorage.setItem('zerolango_theme', theme);
+  }
+
+  // --- Screen management ---
+  function showScreen(name) {
+    Object.values(el.screens).forEach(function(s) { s.classList.add('hidden'); });
+    el.screens[name].classList.remove('hidden');
+  }
+
+  // --- Users screen ---
+  function renderUsersList() {
+    const users = Storage.getUsers();
+    el.usersList.innerHTML = '';
+    if (users.length === 0) {
+      el.usersList.innerHTML = '<p class="no-users">No users yet. Create one below.</p>';
+      return;
+    }
+    users.forEach(function(user) {
+      const card = document.createElement('div');
+      card.className = 'user-card';
+
+      const info = document.createElement('div');
+      info.className = 'user-info';
+      const name = document.createElement('span');
+      name.className = 'user-name';
+      name.textContent = user.username;
+      const games = document.createElement('span');
+      games.className = 'user-games';
+      games.textContent = user.totalGamesPlayed + ' game' + (user.totalGamesPlayed !== 1 ? 's' : '');
+      info.appendChild(name);
+      info.appendChild(games);
+
+      const actions = document.createElement('div');
+      actions.className = 'user-actions';
+
+      const selectBtn = document.createElement('button');
+      selectBtn.className = 'btn-primary btn-sm';
+      selectBtn.textContent = 'Play';
+      selectBtn.addEventListener('click', function() { selectUser(user.username); });
+
+      const statsBtn = document.createElement('button');
+      statsBtn.className = 'btn-secondary btn-sm';
+      statsBtn.textContent = '📊 Stats';
+      statsBtn.addEventListener('click', function() {
+        currentUser = Storage.getUser(user.username);
+        Storage.setLastUser(user.username);
+        statsReturnScreen = 'users';
+        showStatsScreen();
+      });
+
+      const deleteBtn = document.createElement('button');
+      deleteBtn.className = 'btn-ghost btn-sm btn-danger';
+      deleteBtn.textContent = '\u2715';
+      deleteBtn.title = 'Delete user';
+      deleteBtn.addEventListener('click', function() {
+        if (confirm('Are you sure you want to delete "' + user.username + '"?')) {
+          if (confirm('Are you really sure you want to delete "' + user.username + '"? All progress will be lost.')) {
+            Storage.deleteUser(user.username);
+            if (currentUser && currentUser.username === user.username) {
+              currentUser = null;
+            }
+            renderUsersList();
+          }
+        }
+      });
+
+      actions.appendChild(selectBtn);
+      actions.appendChild(statsBtn);
+      actions.appendChild(deleteBtn);
+      card.appendChild(info);
+      card.appendChild(actions);
+      el.usersList.appendChild(card);
+    });
+  }
+
+  function handleAddUser() {
+    const username = el.newUsername.value.trim();
+    if (!username) {
+      showUsersError('Please enter a username.');
+      return;
+    }
+    if (username.length < 2) {
+      showUsersError('Username must be at least 2 characters.');
+      return;
+    }
+    if (Storage.userExists(username)) {
+      showUsersError('That username is already taken.');
+      return;
+    }
+    const user = Storage.createUser(username);
+    el.newUsername.value = '';
+    hideUsersError();
+    selectUser(user.username);
+  }
+
+  function showUsersError(msg) {
+    el.usersError.textContent = msg;
+    el.usersError.classList.remove('hidden');
+  }
+
+  function hideUsersError() {
+    el.usersError.classList.add('hidden');
+  }
+
+  function selectUser(username) {
+    const user = Storage.getUser(username);
+    if (!user) { renderUsersList(); showScreen('users'); return; }
+    currentUser = user;
+    Storage.setLastUser(username);
+    if (user.lastSettings) {
+      gameSettings.mode      = user.lastSettings.mode      || gameSettings.mode;
+      gameSettings.direction = user.lastSettings.direction || gameSettings.direction;
+      gameSettings.duration  = user.lastSettings.duration  || gameSettings.duration;
+    }
+    showSetupScreen();
+  }
+
+  // --- Setup screen ---
+  function showSetupScreen() {
+    renderUsersList();
+    el.setupUsername.textContent = currentUser.username;
+    // Restore toggles to current settings
+    restoreToggle(el.modeOpts, String(gameSettings.mode));
+    restoreToggle(el.directionOpts, String(gameSettings.direction));
+    restoreToggle(el.durationOpts, String(gameSettings.duration));
+    updateBestScoreDisplay();
+    showScreen('setup');
+  }
+
+  function restoreToggle(groupEl, value) {
+    groupEl.querySelectorAll('.toggle-btn').forEach(function(btn) {
+      btn.classList.toggle('active', btn.dataset.value === value);
+    });
+  }
+
+  function updateBestScoreDisplay() {
+    if (!currentUser) return;
+    const best = Storage.getBestScore(currentUser.username, gameSettings.mode, gameSettings.duration);
+    el.bestScoreDisp.textContent = best > 0
+      ? 'Best: ' + best + ' pts for this mode'
+      : 'No best score yet for this mode';
+  }
+
+  // --- Game screen ---
+  function startGame() {
+    if (!currentUser) { showScreen('users'); return; }
+    gameActive = true;
+
+    el.gameScore.textContent = '0';
+    el.gameStreak.textContent = '0';
+    el.gameTimer.textContent = gameSettings.duration;
+    el.gameTimerWrap.classList.remove('timer-warning');
+
+    showScreen('game');
+
+    Storage.saveUserSettings(currentUser.username, {
+      mode:      gameSettings.mode,
+      direction: gameSettings.direction,
+      duration:  gameSettings.duration,
+    });
+
+    GameEngine.start({
+      mode:       gameSettings.mode,
+      direction:  gameSettings.direction,
+      duration:   gameSettings.duration,
+      charStats:  Storage.getCharStats(currentUser.username),
+      onTick:     handleTick,
+      onQuestion: renderQuestion,
+      onAnswer:   handleAnswerResult,
+      onEnd:      handleGameEnd,
+    });
+  }
+
+  function handleTick(timeLeft) {
+    el.gameTimer.textContent = timeLeft;
+    el.gameTimerWrap.classList.toggle('timer-warning', timeLeft <= 10);
+  }
+
+  function renderQuestion(question) {
+    lastQuestion = question;
+    const item      = question.item;
+    const options   = question.options;
+    const direction = question.direction;
+
+    // Prompt
+    if (direction === 'roman-to-japanese') {
+      el.gamePrompt.textContent = item.reading;
+      el.gamePrompt.className = 'prompt-text';
+      el.directionHint.textContent = item.script === 'vocabulary' ? 'Pick the Japanese word' : 'Pick the Japanese character';
+    } else {
+      el.gamePrompt.textContent = item.character;
+      el.gamePrompt.className = item.script === 'vocabulary' ? 'prompt-vocab' : 'prompt-character';
+      el.directionHint.textContent = (item.script === 'kanji' || item.script === 'vocabulary') ? 'Pick the English meaning' : 'Pick the romaji reading';
+    }
+
+    // Options
+    el.gameOptions.innerHTML = '';
+    options.forEach(function(opt, i) {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.dataset.index = i;
+
+      if (direction === 'roman-to-japanese') {
+        btn.textContent = opt.character;
+        btn.classList.add('option-character');
+      } else {
+        btn.textContent = opt.reading;
+        btn.classList.add('option-text');
+      }
+
+      const keyHint = document.createElement('span');
+      keyHint.className = 'key-hint';
+      keyHint.textContent = i + 1;
+      btn.appendChild(keyHint);
+
+      btn.addEventListener('click', function() { handleOptionClick(opt, btn); });
+      el.gameOptions.appendChild(btn);
+    });
+  }
+
+  function handleOptionClick(selectedItem, btn) {
+    if (!gameActive) return;
+    // Disable all buttons immediately
+    disableAllOptions();
+    GameEngine.submitAnswer(selectedItem);
+  }
+
+  function handleAnswerResult(result) {
+    const isCorrect   = result.isCorrect;
+    const correctItem = result.correctItem;
+    const selectedItem = result.selectedItem;
+    const score       = result.score;
+    const streak      = result.streak;
+
+    el.gameScore.textContent  = score;
+    el.gameStreak.textContent = streak;
+
+    // Record per-character result for adaptive weighting and stats
+    Storage.updateCharStat(currentUser.username, correctItem.character, isCorrect);
+
+    // Highlight buttons
+    const btns = el.gameOptions.querySelectorAll('.option-btn');
+    btns.forEach(function(btn) {
+      const idx = parseInt(btn.dataset.index, 10);
+      const opt = lastQuestion.options[idx];
+      if (opt.character === correctItem.character) {
+        btn.classList.add('correct');
+      } else if (opt.character === selectedItem.character && !isCorrect) {
+        btn.classList.add('incorrect');
+      }
+    });
+
+    const delay = isCorrect ? 400 : 1400;
+    clearTimeout(feedbackTimeout);
+    feedbackTimeout = setTimeout(function() {
+      if (!GameEngine.isRunning()) return; // timer ended during pause
+      // Clear highlights
+      btns.forEach(function(btn) { btn.classList.remove('correct', 'incorrect'); });
+      GameEngine.nextQuestion();
+    }, delay);
+  }
+
+  function handleGameEnd(results) {
+    gameActive = false;
+    clearTimeout(feedbackTimeout);
+    Storage.saveGameResult(
+      currentUser.username,
+      results.mode,
+      results.duration,
+      results.score,
+      results.missedItems
+    );
+    // Refresh currentUser data
+    currentUser = Storage.getUser(currentUser.username);
+    renderSummary(results);
+    showScreen('summary');
+  }
+
+  function disableAllOptions() {
+    el.gameOptions.querySelectorAll('.option-btn').forEach(function(btn) {
+      btn.disabled = true;
+    });
+  }
+
+  // --- Summary screen ---
+  function renderSummary(results) {
+    el.summaryStats.innerHTML =
+      '<div class="stat-card"><div class="stat-value">' + results.score + '</div><div class="stat-label">Score</div></div>' +
+      '<div class="stat-card correct-card"><div class="stat-value">' + results.correct + '</div><div class="stat-label">Correct</div></div>' +
+      '<div class="stat-card incorrect-card"><div class="stat-value">' + results.wrong + '</div><div class="stat-label">Wrong</div></div>' +
+      '<div class="stat-card"><div class="stat-value">' + results.accuracy + '%</div><div class="stat-label">Accuracy</div></div>' +
+      '<div class="stat-card"><div class="stat-value">' + results.bestStreak + '</div><div class="stat-label">Best Streak</div></div>';
+
+    if (results.missedItems.length > 0) {
+      el.missedSection.classList.remove('hidden');
+      el.missedList.innerHTML = results.missedItems.map(function(item) {
+        return '<div class="missed-item"><span class="missed-char">' + item.character + '</span><span class="missed-arrow">\u2192</span><span class="missed-reading">' + item.reading + '</span></div>';
+      }).join('');
+    } else {
+      el.missedSection.classList.add('hidden');
+    }
+  }
+
+  // --- Stats screen ---
+  function showStatsScreen() {
+    currentUser = Storage.getUser(currentUser.username);
+    el.statsUsername.textContent = currentUser.username;
+
+    // Compute overall summary
+    const charStats = currentUser.charStats || {};
+    const chars = Object.keys(charStats);
+    var totalCorrect = 0, totalWrong = 0;
+    chars.forEach(function(c) {
+      totalCorrect += charStats[c].correct;
+      totalWrong  += charStats[c].wrong;
+    });
+    const totalAttempts = totalCorrect + totalWrong;
+    const overallAcc = totalAttempts > 0 ? Math.round(totalCorrect / totalAttempts * 100) : null;
+
+    el.statsSummaryBar.innerHTML =
+      '<span><strong>' + chars.length + '</strong> characters practiced</span>' +
+      '<span><strong>' + totalAttempts + '</strong> total answers</span>' +
+      (overallAcc !== null ? '<span><strong>' + overallAcc + '%</strong> overall accuracy</span>' : '<span>Play a round to see stats</span>');
+
+    // Reset tabs to hiragana
+    el.statsTabs.forEach(function(t) { t.classList.toggle('active', t.dataset.script === 'hiragana'); });
+    renderStatsGrid('hiragana');
+    showScreen('stats');
+  }
+
+  function renderStatsGrid(script) {
+    currentUser = Storage.getUser(currentUser.username);
+    const charStats = (currentUser && currentUser.charStats) ? currentUser.charStats : {};
+
+    var items;
+    if (script === 'hiragana')        items = HIRAGANA;
+    else if (script === 'katakana')   items = KATAKANA;
+    else if (script === 'vocabulary') items = VOCABULARY;
+    else                              items = KANJI;
+
+    // Sort: worst accuracy first, unseen last
+    var sorted = items.slice().sort(function(a, b) {
+      const sa = charStats[a.character];
+      const sb = charStats[b.character];
+      const seenA = sa && (sa.correct + sa.wrong) > 0;
+      const seenB = sb && (sb.correct + sb.wrong) > 0;
+      if (!seenA && !seenB) return 0;
+      if (!seenA) return 1;
+      if (!seenB) return -1;
+      const accA = sa.correct / (sa.correct + sa.wrong);
+      const accB = sb.correct / (sb.correct + sb.wrong);
+      return accA - accB;
+    });
+
+    const vocabClass = script === 'vocabulary' ? ' stat-cell--vocab' : '';
+
+    el.statsGrid.innerHTML = sorted.map(function(item) {
+      const stat = charStats[item.character];
+      const seen = stat && (stat.correct + stat.wrong) > 0;
+
+      if (!seen) {
+        return '<div class="stat-cell unseen' + vocabClass + '" title="' + item.reading + '">' +
+          '<div class="stat-char">' + item.character + '</div>' +
+          '<div class="stat-reading">' + item.reading + '</div>' +
+          '<div class="stat-counts">—</div>' +
+          '</div>';
+      }
+
+      const total    = stat.correct + stat.wrong;
+      const accuracy = Math.round(stat.correct / total * 100);
+      const colorClass = accuracy >= 80 ? 'acc-high'
+                       : accuracy >= 60 ? 'acc-mid-high'
+                       : accuracy >= 40 ? 'acc-mid-low'
+                       :                  'acc-low';
+
+      return '<div class="stat-cell ' + colorClass + vocabClass + '" title="' + item.reading + '">' +
+        '<div class="stat-char">' + item.character + '</div>' +
+        '<div class="stat-reading">' + item.reading + '</div>' +
+        '<div class="stat-counts">' + stat.correct + '/' + total + '</div>' +
+        '<div class="stat-bar-wrap"><div class="stat-bar" style="width:' + accuracy + '%"></div></div>' +
+        '<div class="stat-pct">' + accuracy + '%</div>' +
+        '</div>';
+    }).join('');
+  }
+
+  return { init: init };
+})();
+
+document.addEventListener('DOMContentLoaded', App.init);
+
+</script>
+</body>
+</html>
