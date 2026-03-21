@@ -134,6 +134,13 @@ const App = (() => {
           gameSettings[settingKey] = btn.dataset.value;
         }
         updateBestScoreDisplay();
+        if (currentUser) {
+          Storage.saveUserSettings(currentUser.username, {
+            mode:      gameSettings.mode,
+            direction: gameSettings.direction,
+            duration:  gameSettings.duration,
+          });
+        }
       });
     });
   }
