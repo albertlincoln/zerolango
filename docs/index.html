@@ -2706,27 +2706,44 @@ const App = (() => {
     reader.onload = function(ev) {
       try {
         const parsed = JSON.parse(ev.target.result);
-        if (!parsed.users) throw new Error('Missing users key');
-        const existing = Storage.load();
-        const added = [];
-        const skipped = [];
-        Object.values(parsed.users).forEach(function(user) {
-          if (!user.username) return;
-          if (existing.users[user.username]) {
-            skipped.push(user.username);
+        if (!parsed.users) throw new Error('Missing "users" key in file');
+
+        // Read existing data directly from localStorage (no dependency on Storage internals)
+        var existing;
+        try {
+          existing = JSON.parse(localStorage.getItem('zerolango_v1'));
+        } catch (_) {
+          existing = null;
+        }
+        if (!existing || typeof existing !== 'object') existing = {};
+        if (!existing.users || typeof existing.users !== 'object') existing.users = {};
+        if (!existing.lastUser) existing.lastUser = null;
+
+        var added = [];
+        var skipped = [];
+        var names = Object.keys(parsed.users);
+        for (var i = 0; i < names.length; i++) {
+          var name = names[i];
+          var user = parsed.users[name];
+          if (!user || typeof user !== 'object') continue;
+          if (existing.users[name]) {
+            skipped.push(name);
           } else {
-            existing.users[user.username] = user;
-            added.push(user.username);
+            existing.users[name] = user;
+            added.push(name);
           }
-        });
-        Storage.save(existing);
+        }
+
+        localStorage.setItem('zerolango_v1', JSON.stringify(existing));
         el.importFileInput.value = '';
         renderUsersList();
         showScreen('users');
-        const parts = [];
+
+        var parts = [];
         if (added.length) parts.push('Added: ' + added.join(', '));
         if (skipped.length) parts.push('Skipped (already exist): ' + skipped.join(', '));
         if (parts.length) alert(parts.join('\n'));
+        else alert('No users found in file.');
       } catch (err) {
         alert('Import failed: ' + err.message);
         el.importFileInput.value = '';
