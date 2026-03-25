@@ -64,7 +64,9 @@ const App = (() => {
     el.statsTabs         = document.getElementById('screen-stats').querySelectorAll('.stats-tab');
     el.statsGrid         = document.getElementById('stats-grid');
 
-    el.btnThemeToggle = document.getElementById('btn-theme-toggle');
+    el.btnThemeToggle   = document.getElementById('btn-theme-toggle');
+    el.btnExportData    = document.getElementById('btn-export-data');
+    el.importFileInput  = document.getElementById('import-file-input');
 
     bindEvents();
     initTheme();
@@ -118,6 +120,8 @@ const App = (() => {
     });
 
     el.btnThemeToggle.addEventListener('click', toggleTheme);
+    el.btnExportData.addEventListener('click', exportData);
+    el.importFileInput.addEventListener('change', importData);
 
     // Keyboard: 1-4 during game
     document.addEventListener('keydown', handleKeydown);
@@ -554,6 +558,38 @@ const App = (() => {
         '<div class="stat-pct">' + accuracy + '%</div>' +
         '</div>';
     }).join('');
+  }
+
+  // --- Data export / import ---
+  function exportData() {
+    const raw = localStorage.getItem('zerolango_v1') || '{}';
+    const blob = new Blob([raw], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'zerolango-data.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function importData(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      try {
+        const parsed = JSON.parse(ev.target.result);
+        if (!parsed.users) throw new Error('Missing users key');
+        localStorage.setItem('zerolango_v1', JSON.stringify(parsed));
+        el.importFileInput.value = '';
+        renderUsersList();
+        showScreen('users');
+      } catch (err) {
+        alert('Import failed: ' + err.message);
+        el.importFileInput.value = '';
+      }
+    };
+    reader.readAsText(file);
   }
 
   return { init: init };

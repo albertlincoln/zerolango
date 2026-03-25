@@ -203,6 +203,18 @@ input {
   border-color: #b0b0b8;
 }
 
+.btn-small {
+  padding: 6px 14px;
+  font-size: 0.85rem;
+}
+
+.data-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 16px;
+}
+
 .btn-back {
   display: inline-flex;
   align-items: center;
