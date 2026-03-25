@@ -123,6 +123,8 @@ const Storage = (() => {
   }
 
   return {
+    load,
+    save,
     getUsers,
     getLastUser,
     getUser,

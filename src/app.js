@@ -68,8 +68,20 @@ const App = (() => {
     el.btnExportData    = document.getElementById('btn-export-data');
     el.importFileInput  = document.getElementById('import-file-input');
 
+    // Gist sync
+    el.btnGistToggle   = document.getElementById('btn-gist-toggle');
+    el.gistPanel       = document.getElementById('gist-panel');
+    el.gistPat         = document.getElementById('gist-pat');
+    el.btnGistSavePat  = document.getElementById('btn-gist-save-pat');
+    el.gistIdRow       = document.getElementById('gist-id-row');
+    el.gistIdValue     = document.getElementById('gist-id-value');
+    el.btnGistPush     = document.getElementById('btn-gist-push');
+    el.btnGistPull     = document.getElementById('btn-gist-pull');
+    el.gistStatus      = document.getElementById('gist-status');
+
     bindEvents();
     initTheme();
+    initGistUI();
     showScreen('users');
 
     // Auto-select last user if available
@@ -122,6 +134,13 @@ const App = (() => {
     el.btnThemeToggle.addEventListener('click', toggleTheme);
     el.btnExportData.addEventListener('click', exportData);
     el.importFileInput.addEventListener('change', importData);
+
+    el.btnGistToggle.addEventListener('click', function() {
+      el.gistPanel.classList.toggle('hidden');
+    });
+    el.btnGistSavePat.addEventListener('click', handleGistSavePat);
+    el.btnGistPush.addEventListener('click', handleGistPush);
+    el.btnGistPull.addEventListener('click', handleGistPull);
 
     // Keyboard: 1-4 during game
     document.addEventListener('keydown', handleKeydown);
@@ -580,16 +599,119 @@ const App = (() => {
       try {
         const parsed = JSON.parse(ev.target.result);
         if (!parsed.users) throw new Error('Missing users key');
-        localStorage.setItem('zerolango_v1', JSON.stringify(parsed));
+        const existing = Storage.load();
+        const added = [];
+        const skipped = [];
+        Object.values(parsed.users).forEach(function(user) {
+          if (!user.username) return;
+          if (existing.users[user.username]) {
+            skipped.push(user.username);
+          } else {
+            existing.users[user.username] = user;
+            added.push(user.username);
+          }
+        });
+        Storage.save(existing);
         el.importFileInput.value = '';
         renderUsersList();
         showScreen('users');
+        const parts = [];
+        if (added.length) parts.push('Added: ' + added.join(', '));
+        if (skipped.length) parts.push('Skipped (already exist): ' + skipped.join(', '));
+        if (parts.length) alert(parts.join('\n'));
       } catch (err) {
         alert('Import failed: ' + err.message);
         el.importFileInput.value = '';
       }
     };
     reader.readAsText(file);
+  }
+
+  // --- Gist Sync ---
+  function initGistUI() {
+    const config = GistSync.getConfig();
+    if (config.pat) {
+      el.gistPat.placeholder = 'Token saved (click Save to replace)';
+    }
+    if (config.gistId) {
+      el.gistIdValue.textContent = config.gistId;
+      el.gistIdRow.classList.remove('hidden');
+    }
+    if (config.lastPushedAt) {
+      setGistStatus('Last pushed: ' + formatSyncTime(config.lastPushedAt), false);
+    }
+  }
+
+  function handleGistSavePat() {
+    const pat = el.gistPat.value.trim();
+    if (!pat) {
+      setGistStatus('Please enter a token.', true);
+      return;
+    }
+    const config = GistSync.getConfig();
+    GistSync.saveConfig(Object.assign({}, config, { pat: pat }));
+    el.gistPat.value = '';
+    el.gistPat.placeholder = 'Token saved (click Save to replace)';
+    setGistStatus('Token saved.', false);
+  }
+
+  function handleGistPush() {
+    const config = GistSync.getConfig();
+    if (!config.pat) {
+      setGistStatus('Save a GitHub token first.', true);
+      return;
+    }
+    const raw = localStorage.getItem('zerolango_v1');
+    const data = raw ? JSON.parse(raw) : { users: {} };
+    el.btnGistPush.disabled = true;
+    el.btnGistPush.textContent = 'Pushing…';
+    GistSync.push(data).then(function() {
+      const cfg = GistSync.getConfig();
+      el.gistIdValue.textContent = cfg.gistId;
+      el.gistIdRow.classList.remove('hidden');
+      setGistStatus('Pushed at ' + formatSyncTime(cfg.lastPushedAt), false);
+    }).catch(function(err) {
+      setGistStatus(err.message, true);
+    }).finally(function() {
+      el.btnGistPush.disabled = false;
+      el.btnGistPush.textContent = '↑ Push to Gist';
+    });
+  }
+
+  function handleGistPull() {
+    const config = GistSync.getConfig();
+    if (!config.pat) {
+      setGistStatus('Save a GitHub token first.', true);
+      return;
+    }
+    el.btnGistPull.disabled = true;
+    el.btnGistPull.textContent = 'Pulling…';
+    GistSync.pull().then(function(result) {
+      const remoteTime = new Date(result.updatedAt).toLocaleString();
+      if (!confirm('Replace local data with gist version last updated ' + remoteTime + '?')) {
+        setGistStatus('Pull cancelled.', false);
+        return;
+      }
+      localStorage.setItem('zerolango_v1', JSON.stringify(result.data));
+      renderUsersList();
+      showScreen('users');
+      setGistStatus('Pulled at ' + formatSyncTime(GistSync.getConfig().lastPulledAt), false);
+    }).catch(function(err) {
+      setGistStatus(err.message, true);
+    }).finally(function() {
+      el.btnGistPull.disabled = false;
+      el.btnGistPull.textContent = '↓ Pull from Gist';
+    });
+  }
+
+  function setGistStatus(msg, isError) {
+    el.gistStatus.textContent = msg;
+    el.gistStatus.className = 'gist-status ' + (isError ? 'status-error' : 'status-ok');
+    el.gistStatus.classList.remove('hidden');
+  }
+
+  function formatSyncTime(iso) {
+    return new Date(iso).toLocaleString();
   }
 
   return { init: init };

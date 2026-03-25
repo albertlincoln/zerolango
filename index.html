@@ -31,6 +31,25 @@
           <input type="file" id="import-file-input" accept=".json" style="display:none">
         </label>
       </div>
+      <div class="gist-sync">
+        <button id="btn-gist-toggle" class="btn-ghost btn-small">☁ Gist Sync</button>
+        <div id="gist-panel" class="gist-panel hidden">
+          <p class="gist-instructions">Sync your data with a private GitHub Gist. Create a <a href="https://github.com/settings/tokens/new?scopes=gist&description=ZeroLango" target="_blank" rel="noopener">Personal Access Token</a> with the <code>gist</code> scope, then paste it below.</p>
+          <div class="gist-pat-row">
+            <input type="password" id="gist-pat" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off">
+            <button id="btn-gist-save-pat" class="btn-secondary btn-sm">Save</button>
+          </div>
+          <div id="gist-id-row" class="gist-id-row hidden">
+            <span class="gist-id-label">Gist ID:</span>
+            <span id="gist-id-value" class="gist-id-value"></span>
+          </div>
+          <div class="gist-actions">
+            <button id="btn-gist-push" class="btn-secondary btn-sm">↑ Push to Gist</button>
+            <button id="btn-gist-pull" class="btn-secondary btn-sm">↓ Pull from Gist</button>
+          </div>
+          <p id="gist-status" class="gist-status hidden"></p>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -151,6 +170,7 @@
 <script src="src/data/katakana.js"></script>
 <script src="src/data/kanji.js"></script>
 <script src="src/storage/localStorage.js"></script>
+<script src="src/storage/gist.js"></script>
 <script src="src/game/engine.js"></script>
 <script src="src/app.js"></script>
 </body>
