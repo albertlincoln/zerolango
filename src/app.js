@@ -91,6 +91,19 @@ const App = (() => {
     } else {
       renderUsersList();
     }
+
+    // Auto-pull from GitHub if PAT is configured and it's the first check of the day
+    GistSync.checkAndAutoPull().then(function(result) {
+      if (result.action === 'merged') {
+        setGistStatus('Synced from GitHub (v' + result.remoteVersion + ')', false);
+        renderUsersList();
+        if (currentUser) {
+          currentUser = Storage.getUser(currentUser.username) || currentUser;
+        }
+      }
+    }).catch(function() {
+      // silent — auto-pull failures should not interrupt startup
+    });
   }
 
   function bindEvents() {
@@ -468,6 +481,18 @@ const App = (() => {
     );
     // Refresh currentUser data
     currentUser = Storage.getUser(currentUser.username);
+
+    // Auto-push if PAT is configured
+    const gistConfig = GistSync.getConfig();
+    if (gistConfig.pat) {
+      Storage.bumpVersion();
+      GistSync.push(Storage.load()).then(function() {
+        setGistStatus('Auto-synced after game', false);
+      }).catch(function() {
+        // silent failure — don't interrupt summary screen
+      });
+    }
+
     renderSummary(results);
     showScreen('summary');
   }

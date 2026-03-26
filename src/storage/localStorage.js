@@ -3,9 +3,11 @@ const Storage = (() => {
 
   function load() {
     try {
-      return JSON.parse(localStorage.getItem(KEY)) || { users: {}, lastUser: null };
+      const data = JSON.parse(localStorage.getItem(KEY)) || { users: {}, lastUser: null, version: 0 };
+      if (typeof data.version !== 'number') data.version = 0;
+      return data;
     } catch (e) {
-      return { users: {}, lastUser: null };
+      return { users: {}, lastUser: null, version: 0 };
     }
   }
 
@@ -122,6 +124,88 @@ const Storage = (() => {
     return (user && user.charStats) ? user.charStats : {};
   }
 
+  function bumpVersion() {
+    const data = load();
+    data.version = (data.version || 0) + 1;
+    save(data);
+    return data.version;
+  }
+
+  function mergeBestScores(a, b) {
+    const merged = {};
+    const modes = Object.keys(Object.assign({}, a || {}, b || {}));
+    modes.forEach(function(mode) {
+      merged[mode] = {};
+      const durations = Object.keys(Object.assign({}, (a && a[mode]) || {}, (b && b[mode]) || {}));
+      durations.forEach(function(dur) {
+        const aVal = (a && a[mode] && a[mode][dur]) || 0;
+        const bVal = (b && b[mode] && b[mode][dur]) || 0;
+        merged[mode][dur] = Math.max(aVal, bVal);
+      });
+    });
+    return merged;
+  }
+
+  function mergeLastMissed(a, b) {
+    const seen = {};
+    const merged = [];
+    const combined = (b || []).concat(a || []);
+    combined.forEach(function(item) {
+      if (!seen[item.character]) {
+        seen[item.character] = true;
+        merged.push(item);
+      }
+    });
+    return merged.slice(0, 20);
+  }
+
+  function mergeCharStats(a, b) {
+    const merged = Object.assign({}, a || {});
+    Object.entries(b || {}).forEach(function(entry) {
+      const character = entry[0];
+      const bStats = entry[1];
+      if (!merged[character]) {
+        merged[character] = bStats;
+      } else {
+        merged[character] = {
+          correct: (merged[character].correct || 0) + (bStats.correct || 0),
+          wrong: (merged[character].wrong || 0) + (bStats.wrong || 0),
+        };
+      }
+    });
+    return merged;
+  }
+
+  function mergeRemote(remoteData) {
+    const local = load();
+    const merged = {
+      version: remoteData.version,
+      lastUser: remoteData.lastUser || local.lastUser,
+      users: Object.assign({}, local.users),
+    };
+
+    Object.entries(remoteData.users || {}).forEach(function(entry) {
+      const username = entry[0];
+      const remoteUser = entry[1];
+      const localUser = merged.users[username];
+      if (!localUser) {
+        merged.users[username] = remoteUser;
+        return;
+      }
+      merged.users[username] = {
+        username: username,
+        totalGamesPlayed: Math.max(localUser.totalGamesPlayed || 0, remoteUser.totalGamesPlayed || 0),
+        bestScores: mergeBestScores(localUser.bestScores, remoteUser.bestScores),
+        lastMissed: mergeLastMissed(localUser.lastMissed, remoteUser.lastMissed),
+        lastSettings: remoteUser.lastSettings || localUser.lastSettings,
+        charStats: mergeCharStats(localUser.charStats, remoteUser.charStats),
+      };
+    });
+
+    save(merged);
+    return merged;
+  }
+
   return {
     load,
     save,
@@ -137,5 +221,7 @@ const Storage = (() => {
     updateCharStat,
     getCharStats,
     saveUserSettings,
+    bumpVersion,
+    mergeRemote,
   };
 })();

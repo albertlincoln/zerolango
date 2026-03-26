@@ -91,5 +91,26 @@ const GistSync = (() => {
     return { data: data, updatedAt: gist.updated_at };
   }
 
-  return { getConfig: getConfig, saveConfig: saveConfig, push: push, pull: pull };
+  async function checkAndAutoPull() {
+    const config = getConfig();
+    if (!config.pat || !config.gistId) return { action: 'skipped' };
+
+    const today = new Date().toDateString();
+    if (config.lastAutoCheckDate === today) return { action: 'skipped' };
+
+    const result = await pull();
+    saveConfig(Object.assign({}, getConfig(), { lastAutoCheckDate: today }));
+
+    const localData = JSON.parse(localStorage.getItem('zerolango_v1') || '{}');
+    const localVersion = localData.version || 0;
+    const remoteVersion = result.data.version || 0;
+
+    if (remoteVersion > localVersion) {
+      Storage.mergeRemote(result.data);
+      return { action: 'merged', remoteVersion: remoteVersion };
+    }
+    return { action: 'up-to-date', remoteVersion: remoteVersion };
+  }
+
+  return { getConfig: getConfig, saveConfig: saveConfig, push: push, pull: pull, checkAndAutoPull: checkAndAutoPull };
 })();
