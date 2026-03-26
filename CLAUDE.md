@@ -2,7 +2,7 @@
 
 ## What this project is
 
-A single-page Japanese character matching game. No build step, no bundler, no framework. Open `index.html` directly in a browser. Everything is vanilla JS with global variables loaded via `<script>` tags.
+A single-page Japanese character matching game. No bundler, no framework. During development, open `index.html` directly in a browser. Everything is vanilla JS with global variables loaded via `<script>` tags. For deployment, use `node build.js` to bundle all scripts and styles into a single HTML file at `docs/index.html`.
 
 ---
 
@@ -33,9 +33,12 @@ Scripts **must** be loaded in this order or globals won't exist when needed:
 <script src="src/data/katakana.js"></script>      <!-- KATAKANA global -->
 <script src="src/data/kanji.js"></script>         <!-- KANJI global -->
 <script src="src/storage/localStorage.js"></script> <!-- Storage global -->
+<script src="src/storage/gist.js"></script>       <!-- GistSync global -->
 <script src="src/game/engine.js"></script>        <!-- GameEngine global -->
 <script src="src/app.js"></script>                <!-- App global -->
 ```
+
+**Critical:** Whenever you add a new script file, update both `index.html` AND `build.js` to include it in the same order. The build script reads `build.js` for the definitive load order.
 
 ### Dead files — ignore these
 
@@ -52,6 +55,7 @@ Scripts **must** be loaded in this order or globals won't exist when needed:
 | `src/data/kanji.js` | `KANJI` | 50 kanji with English meanings |
 | `src/data/vocabulary.js` | `VOCABULARY` | 50 vocabulary words with English meanings |
 | `src/storage/localStorage.js` | `Storage` | All localStorage read/write. Single key: `zerolango_v1` |
+| `src/storage/gist.js` | `GistSync` | GitHub Gist sync API (push/pull) |
 | `src/game/engine.js` | `GameEngine` | Timer, question generation, weighted selection, scoring |
 | `src/app.js` | `App` | Screen management, DOM wiring, all UI callbacks |
 | `src/ui/styles.css` | — | All styles. Uses CSS custom properties for theming |
@@ -178,6 +182,37 @@ The stats grid accuracy cells use hardcoded colours (`.acc-low`, `.acc-mid-low`,
 ## Keyboard shortcuts
 
 During a game round, keys `1` `2` `3` `4` select the corresponding answer button.
+
+---
+
+## Build process
+
+This project bundles all scripts and styles into a single HTML file for deployment.
+
+### Development
+- Edit files normally in `src/`, `index.html`, etc.
+- Open `index.html` directly in a browser to test
+- Cache-busting query params (`?v=2`) in script tags prevent stale JS on dev
+
+### Deployment
+Run:
+```bash
+node build.js
+```
+
+This:
+1. Reads all scripts in the order listed in `build.js` (data files → storage → game → app)
+2. Reads `src/ui/styles.css` and inlines it as `<style>`
+3. Replaces all `<script src="...">` tags with a single bundled `<script>`
+4. Writes to `docs/index.html`
+
+### ⚠️ Critical: When adding new scripts
+
+Always update **both** files in the same order:
+1. `index.html` — add `<script src="...?v=2"></script>` after dependencies
+2. `build.js` — add the file path to the `scripts` array in the same position
+
+If `build.js` is out of sync with `index.html`, the bundled version will be missing code or have globals undefined at runtime.
 
 ---
 

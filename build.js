@@ -12,6 +12,7 @@ const scripts = [
   'src/data/katakana.js',
   'src/data/kanji.js',
   'src/storage/localStorage.js',
+  'src/storage/gist.js',
   'src/game/engine.js',
   'src/app.js',
 ].map(function(file) {
