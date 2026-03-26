@@ -227,7 +227,8 @@ See `skills/add-content.md` for step-by-step guides on:
 ## Things to avoid
 
 - **Don't add ES modules.** No `import`/`export`/`require`. The app has no bundler.
-- **Don't reorder `<script>` tags** without checking the dependency chain above.
+- **Don't add new script files without updating both `index.html` AND `build.js`.** If out of sync, the deployed version will be missing code.
+- **Don't reorder `<script>` tags** without checking the dependency chain. Update `build.js` in the same order.
 - **Don't add new `localStorage` keys** — all user data lives under `zerolango_v1`. Extend the user schema and guard old records.
 - **Don't reference the dead stub files** (`matcher.js`, `scoring.js`, `components.js`, `screens.js`).
 - **Don't hardcode colours** outside the CSS variable blocks.
