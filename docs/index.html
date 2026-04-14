@@ -288,6 +288,20 @@ input {
   letter-spacing: -0.5px;
 }
 
+.brand-star {
+  display: inline-block;
+  animation: starSpin 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.brand-star--right {
+  animation-delay: 0.12s;
+}
+
+@keyframes starSpin {
+  from { transform: rotate(0deg) scale(0.5); opacity: 0; }
+  to   { transform: rotate(360deg) scale(1); opacity: 1; }
+}
+
 .subtitle {
   color: var(--text-muted);
   font-size: 1rem;
@@ -1352,7 +1366,7 @@ html[data-theme="dark"] .legend-item.unseen       { background: #1e1e2a; color: 
   <div id="screen-users" class="screen">
     <div class="screen-content">
       <div class="brand">
-        <h1>⭐ ZeroLango ⭐</h1>
+        <h1><span class="brand-star">⭐</span> ZeroLango <span class="brand-star brand-star--right">⭐</span></h1>
         <p class="subtitle">Japanese character matching game</p>
       </div>
       <div id="users-list"></div>
@@ -1503,7 +1517,7 @@ html[data-theme="dark"] .legend-item.unseen       { background: #1e1e2a; color: 
 
 </div>
 
-<footer class="app-version">61835aa</footer>
+<footer class="app-version">c35f115</footer>
 
 <script>
 const HIRAGANA = [
