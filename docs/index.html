@@ -94,6 +94,17 @@ input {
   flex-direction: column;
 }
 
+.app-version {
+  position: fixed;
+  bottom: 6px;
+  right: 10px;
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+  opacity: 0.5;
+  pointer-events: none;
+  user-select: none;
+}
+
 /* ----- Screen System ----- */
 .screen {
   display: flex;
@@ -636,6 +647,8 @@ input {
   box-shadow: var(--shadow);
   word-break: break-word;
   text-align: center;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
 }
 
 .option-btn:hover:not(:disabled) {
@@ -1489,6 +1502,8 @@ html[data-theme="dark"] .legend-item.unseen       { background: #1e1e2a; color: 
   </div>
 
 </div>
+
+<footer class="app-version">82d5924</footer>
 
 <script>
 const HIRAGANA = [
