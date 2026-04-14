@@ -651,13 +651,11 @@ input {
   outline: none;
 }
 
-@media (hover: hover) {
-  .option-btn:hover:not(:disabled) {
-    border-color: var(--primary);
-    background: var(--primary-light);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-  }
+body:not(.touch-device) .option-btn:hover:not(:disabled) {
+  border-color: var(--primary);
+  background: var(--primary-light);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 .option-btn:active:not(:disabled) {
@@ -1505,7 +1503,7 @@ html[data-theme="dark"] .legend-item.unseen       { background: #1e1e2a; color: 
 
 </div>
 
-<footer class="app-version">250ecd5</footer>
+<footer class="app-version">5163b0c</footer>
 
 <script>
 const HIRAGANA = [
@@ -3120,6 +3118,10 @@ const App = (() => {
 })();
 
 document.addEventListener('DOMContentLoaded', App.init);
+
+document.addEventListener('touchstart', function() {
+  document.body.classList.add('touch-device');
+}, { once: true, passive: true });
 
 </script>
 </body>
