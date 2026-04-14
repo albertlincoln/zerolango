@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>ZeroLango</title>
   <style>
 /* =========================================================
@@ -96,11 +96,11 @@ input {
 
 .app-version {
   position: fixed;
-  bottom: 6px;
-  right: 10px;
-  font-size: 0.6875rem;
+  bottom: max(10px, env(safe-area-inset-bottom));
+  right: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
   color: var(--text-muted);
-  opacity: 0.5;
   pointer-events: none;
   user-select: none;
 }
@@ -1503,7 +1503,7 @@ html[data-theme="dark"] .legend-item.unseen       { background: #1e1e2a; color: 
 
 </div>
 
-<footer class="app-version">82d5924</footer>
+<footer class="app-version">545bd6e</footer>
 
 <script>
 const HIRAGANA = [
