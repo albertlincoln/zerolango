@@ -1503,7 +1503,7 @@ html[data-theme="dark"] .legend-item.unseen       { background: #1e1e2a; color: 
 
 </div>
 
-<footer class="app-version">5163b0c</footer>
+<footer class="app-version">61835aa</footer>
 
 <script>
 const HIRAGANA = [
@@ -2219,12 +2219,14 @@ const GameEngine = (() => {
     return items[items.length - 1];
   }
 
-  function getOptionCount() {
-    const total = correct + wrong;
+  function getOptionCount(item) {
+    const stat = charStats[item.character];
+    if (!stat) return 4;
+    const total = stat.correct + stat.wrong;
     if (total === 0) return 4;
-    const accuracy = correct / total;
-    if (correct >= 10 && accuracy >= 0.9) return 8;
-    if (correct >= 5  && accuracy >= 0.8) return 6;
+    const accuracy = stat.correct / total;
+    if (stat.correct >= 10 && accuracy >= 0.9) return 8;
+    if (stat.correct >= 5  && accuracy >= 0.8) return 6;
     return 4;
   }
 
@@ -2232,7 +2234,7 @@ const GameEngine = (() => {
     currentItem = weightedPick(pool);
     currentDirection = resolveDirection();
 
-    const optionCount = getOptionCount();
+    const optionCount = getOptionCount(currentItem);
     const distractorCount = optionCount - 1;
 
     // Build distractors from same script as correct item
