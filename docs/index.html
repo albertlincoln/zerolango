@@ -290,16 +290,23 @@ input {
 
 .brand-star {
   display: inline-block;
+}
+
+.brand-star.spinning {
   animation: starSpin 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
-.brand-star--right {
+.brand-star--right.spinning {
   animation-delay: 0.12s;
 }
 
+.brand h1 {
+  cursor: pointer;
+}
+
 @keyframes starSpin {
-  from { transform: rotate(0deg) scale(0.5); opacity: 0; }
-  to   { transform: rotate(360deg) scale(1); opacity: 1; }
+  from { transform: rotate(0deg) scale(0.5); }
+  to   { transform: rotate(360deg) scale(1); }
 }
 
 .subtitle {
@@ -1517,7 +1524,7 @@ html[data-theme="dark"] .legend-item.unseen       { background: #1e1e2a; color: 
 
 </div>
 
-<footer class="app-version">c35f115</footer>
+<footer class="app-version">264047e</footer>
 
 <script>
 const HIRAGANA = [
@@ -2479,6 +2486,16 @@ const App = (() => {
   }
 
   function bindEvents() {
+    // Brand spin on click
+    document.querySelector('.brand h1').addEventListener('click', function() {
+      const stars = document.querySelectorAll('.brand-star');
+      stars.forEach(function(star) {
+        star.classList.remove('spinning');
+        void star.offsetWidth; // force reflow so animation restarts
+        star.classList.add('spinning');
+      });
+    });
+
     // Users screen
     el.btnAddUser.addEventListener('click', handleAddUser);
     el.newUsername.addEventListener('keydown', function(e) {
