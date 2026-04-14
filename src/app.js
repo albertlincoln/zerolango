@@ -184,7 +184,7 @@ const App = (() => {
   function handleKeydown(e) {
     if (!gameActive) return;
     const key = e.key;
-    if (key === '1' || key === '2' || key === '3' || key === '4') {
+    if (key >= '1' && key <= '8') {
       const idx = parseInt(key, 10) - 1;
       const btns = el.gameOptions.querySelectorAll('.option-btn');
       if (btns[idx] && !btns[idx].disabled) {
@@ -402,8 +402,9 @@ const App = (() => {
       el.directionHint.textContent = (item.script === 'kanji' || item.script === 'vocabulary') ? 'Pick the English meaning' : 'Pick the romaji reading';
     }
 
-    // Options
+    // Options — apply 2-column layout class for 6/8 options
     el.gameOptions.innerHTML = '';
+    el.gameOptions.classList.toggle('options-2col', question.optionCount >= 6);
     options.forEach(function(opt, i) {
       const btn = document.createElement('button');
       btn.className = 'option-btn';
@@ -429,6 +430,7 @@ const App = (() => {
 
   function handleOptionClick(selectedItem, btn) {
     if (!gameActive) return;
+    btn.blur();
     // Disable all buttons immediately
     disableAllOptions();
     GameEngine.submitAnswer(selectedItem);

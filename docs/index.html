@@ -604,6 +604,23 @@ input {
   width: 100%;
 }
 
+/* 2-column layout for 6 or 8 options — desktop only */
+@media (min-width: 481px) {
+  .options-grid.options-2col {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .options-grid.options-2col .option-btn {
+    min-height: 60px;
+    padding: 12px 16px;
+  }
+
+  .options-grid.options-2col .option-btn.option-character {
+    font-size: 2rem;
+  }
+}
+
 .option-btn {
   position: relative;
   display: flex;
@@ -2187,11 +2204,23 @@ const GameEngine = (() => {
     return items[items.length - 1];
   }
 
+  function getOptionCount() {
+    const total = correct + wrong;
+    if (total === 0) return 4;
+    const accuracy = correct / total;
+    if (correct >= 10 && accuracy >= 0.9) return 8;
+    if (correct >= 5  && accuracy >= 0.8) return 6;
+    return 4;
+  }
+
   function generateQuestion() {
     currentItem = weightedPick(pool);
     currentDirection = resolveDirection();
 
-    // Build 3 distractors from same script as correct item
+    const optionCount = getOptionCount();
+    const distractorCount = optionCount - 1;
+
+    // Build distractors from same script as correct item
     const samePool = getScriptPool(currentItem.script);
     const used = {};
     used[currentItem.character] = true;
@@ -2199,7 +2228,7 @@ const GameEngine = (() => {
 
     // Shuffle the pool to pick random distractors
     const shuffled = shuffle(samePool);
-    for (let i = 0; i < shuffled.length && distractors.length < 3; i++) {
+    for (let i = 0; i < shuffled.length && distractors.length < distractorCount; i++) {
       if (!used[shuffled[i].character]) {
         used[shuffled[i].character] = true;
         distractors.push(shuffled[i]);
@@ -2212,6 +2241,7 @@ const GameEngine = (() => {
       item: currentItem,
       options: currentOptions,
       direction: currentDirection,
+      optionCount: currentOptions.length,
     };
   }
 
@@ -2495,7 +2525,7 @@ const App = (() => {
   function handleKeydown(e) {
     if (!gameActive) return;
     const key = e.key;
-    if (key === '1' || key === '2' || key === '3' || key === '4') {
+    if (key >= '1' && key <= '8') {
       const idx = parseInt(key, 10) - 1;
       const btns = el.gameOptions.querySelectorAll('.option-btn');
       if (btns[idx] && !btns[idx].disabled) {
@@ -2713,8 +2743,9 @@ const App = (() => {
       el.directionHint.textContent = (item.script === 'kanji' || item.script === 'vocabulary') ? 'Pick the English meaning' : 'Pick the romaji reading';
     }
 
-    // Options
+    // Options — apply 2-column layout class for 6/8 options
     el.gameOptions.innerHTML = '';
+    el.gameOptions.classList.toggle('options-2col', question.optionCount >= 6);
     options.forEach(function(opt, i) {
       const btn = document.createElement('button');
       btn.className = 'option-btn';
@@ -2740,6 +2771,7 @@ const App = (() => {
 
   function handleOptionClick(selectedItem, btn) {
     if (!gameActive) return;
+    btn.blur();
     // Disable all buttons immediately
     disableAllOptions();
     GameEngine.submitAnswer(selectedItem);

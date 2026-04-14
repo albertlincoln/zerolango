@@ -86,11 +86,23 @@ const GameEngine = (() => {
     return items[items.length - 1];
   }
 
+  function getOptionCount() {
+    const total = correct + wrong;
+    if (total === 0) return 4;
+    const accuracy = correct / total;
+    if (correct >= 10 && accuracy >= 0.9) return 8;
+    if (correct >= 5  && accuracy >= 0.8) return 6;
+    return 4;
+  }
+
   function generateQuestion() {
     currentItem = weightedPick(pool);
     currentDirection = resolveDirection();
 
-    // Build 3 distractors from same script as correct item
+    const optionCount = getOptionCount();
+    const distractorCount = optionCount - 1;
+
+    // Build distractors from same script as correct item
     const samePool = getScriptPool(currentItem.script);
     const used = {};
     used[currentItem.character] = true;
@@ -98,7 +110,7 @@ const GameEngine = (() => {
 
     // Shuffle the pool to pick random distractors
     const shuffled = shuffle(samePool);
-    for (let i = 0; i < shuffled.length && distractors.length < 3; i++) {
+    for (let i = 0; i < shuffled.length && distractors.length < distractorCount; i++) {
       if (!used[shuffled[i].character]) {
         used[shuffled[i].character] = true;
         distractors.push(shuffled[i]);
@@ -111,6 +123,7 @@ const GameEngine = (() => {
       item: currentItem,
       options: currentOptions,
       direction: currentDirection,
+      optionCount: currentOptions.length,
     };
   }
 
