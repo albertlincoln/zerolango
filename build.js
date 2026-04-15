@@ -1,8 +1,15 @@
 #!/usr/bin/env node
-const fs   = require('fs');
-const path = require('path');
+const fs     = require('fs');
+const path   = require('path');
+const { execSync } = require('child_process');
 
 const root = __dirname;
+
+let gitHash = 'dev';
+try {
+  gitHash = execSync('git rev-parse --short HEAD', { cwd: root }).toString().trim();
+} catch (e) {}
+
 
 const css = fs.readFileSync(path.join(root, 'src/ui/styles.css'), 'utf8');
 
@@ -25,6 +32,7 @@ const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8')
     /<script src="[^"]*"><\/script>\n?/g,
     ''
   )
+  .replace('__GIT_HASH__', gitHash)
   .replace('</body>', '<script>\n' + scripts + '\n</script>\n</body>');
 
 fs.mkdirSync(path.join(root, 'docs'), { recursive: true });

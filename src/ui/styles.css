@@ -87,6 +87,17 @@ input {
   flex-direction: column;
 }
 
+.app-version {
+  position: fixed;
+  bottom: max(10px, env(safe-area-inset-bottom));
+  right: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  pointer-events: none;
+  user-select: none;
+}
+
 /* ----- Screen System ----- */
 .screen {
   display: flex;
@@ -268,6 +279,27 @@ input {
   font-weight: 800;
   color: var(--primary);
   letter-spacing: -0.5px;
+}
+
+.brand-star {
+  display: inline-block;
+}
+
+.brand-star.spinning {
+  animation: starSpin 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.brand-star--right.spinning {
+  animation-delay: 0.12s;
+}
+
+.brand h1 {
+  cursor: pointer;
+}
+
+@keyframes starSpin {
+  from { transform: rotate(0deg) scale(0.5); }
+  to   { transform: rotate(360deg) scale(1); }
 }
 
 .subtitle {
@@ -629,9 +661,11 @@ input {
   box-shadow: var(--shadow);
   word-break: break-word;
   text-align: center;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
 }
 
-.option-btn:hover:not(:disabled) {
+body:not(.touch-device) .option-btn:hover:not(:disabled) {
   border-color: var(--primary);
   background: var(--primary-light);
   transform: translateY(-2px);

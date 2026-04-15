@@ -107,6 +107,16 @@ const App = (() => {
   }
 
   function bindEvents() {
+    // Brand spin on click
+    document.querySelector('.brand h1').addEventListener('click', function() {
+      const stars = document.querySelectorAll('.brand-star');
+      stars.forEach(function(star) {
+        star.classList.remove('spinning');
+        void star.offsetWidth; // force reflow so animation restarts
+        star.classList.add('spinning');
+      });
+    });
+
     // Users screen
     el.btnAddUser.addEventListener('click', handleAddUser);
     el.newUsername.addEventListener('keydown', function(e) {
@@ -762,3 +772,7 @@ const App = (() => {
 })();
 
 document.addEventListener('DOMContentLoaded', App.init);
+
+document.addEventListener('touchstart', function() {
+  document.body.classList.add('touch-device');
+}, { once: true, passive: true });
