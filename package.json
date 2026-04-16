@@ -1,0 +1,5 @@
+{
+  "scripts": {
+    "publish": "node build.js && git add docs/index.html && git commit -m \"publish $(git rev-parse --short HEAD)\" && git push"
+  }
+}
