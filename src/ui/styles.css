@@ -473,6 +473,24 @@ input {
   box-shadow: 0 2px 8px rgba(91, 79, 207, 0.25);
 }
 
+.toggle-btn--review {
+  border-color: var(--timer-warning);
+  color: var(--timer-warning);
+}
+
+.toggle-btn--review:hover {
+  background: var(--timer-warning-light);
+  border-color: var(--timer-warning);
+  color: var(--timer-warning);
+}
+
+.toggle-btn--review.active {
+  background: var(--timer-warning);
+  border-color: var(--timer-warning);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(255, 149, 0, 0.3);
+}
+
 .best-score-display {
   text-align: center;
   font-size: 0.9375rem;

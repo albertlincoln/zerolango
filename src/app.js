@@ -355,14 +355,29 @@ const App = (() => {
   function updateBestScoreDisplay() {
     if (!currentUser) return;
     const best = Storage.getBestScore(currentUser.username, gameSettings.mode, gameSettings.duration);
-    el.bestScoreDisp.textContent = best > 0
+    var text = best > 0
       ? 'Best: ' + best + ' pts for this mode'
       : 'No best score yet for this mode';
+    if (gameSettings.mode === 'review') {
+      const count = GameEngine.getReviewPool(Storage.getCharStats(currentUser.username)).length;
+      const countMsg = count === 0
+        ? 'Nothing to review — play other modes first'
+        : count + ' item' + (count === 1 ? '' : 's') + ' need work';
+      text = countMsg + (best > 0 ? ' · Best: ' + best + ' pts' : '');
+    }
+    el.bestScoreDisp.textContent = text;
   }
 
   // --- Game screen ---
   function startGame() {
     if (!currentUser) { showScreen('users'); return; }
+    if (gameSettings.mode === 'review') {
+      const reviewPool = GameEngine.getReviewPool(Storage.getCharStats(currentUser.username));
+      if (reviewPool.length === 0) {
+        alert('Nothing to review yet — play other modes first so weak items can be tracked.');
+        return;
+      }
+    }
     gameActive = true;
 
     el.gameScore.textContent = '0';

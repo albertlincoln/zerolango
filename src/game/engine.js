@@ -42,12 +42,31 @@ const GameEngine = (() => {
     if (mode === 'katakana')   return KATAKANA.map(function(item) { return Object.assign({}, item, { script: 'katakana' }); });
     if (mode === 'kanji')      return KANJI.map(function(item) { return Object.assign({}, item, { script: 'kanji' }); });
     if (mode === 'vocabulary') return VOCABULARY.map(function(item) { return Object.assign({}, item, { script: 'vocabulary' }); });
+    if (mode === 'review')     return getReviewPool(charStats);
     // mixed
     return [].concat(
       HIRAGANA.map(function(item) { return Object.assign({}, item, { script: 'hiragana' }); }),
       KATAKANA.map(function(item) { return Object.assign({}, item, { script: 'katakana' }); }),
       KANJI.map(function(item) { return Object.assign({}, item, { script: 'kanji' }); })
     );
+  }
+
+  // Items across all scripts that have been attempted but not mastered (<80% accuracy).
+  function getReviewPool(stats) {
+    const s = stats || {};
+    const all = [].concat(
+      HIRAGANA.map(function(item)   { return Object.assign({}, item, { script: 'hiragana' }); }),
+      KATAKANA.map(function(item)   { return Object.assign({}, item, { script: 'katakana' }); }),
+      KANJI.map(function(item)      { return Object.assign({}, item, { script: 'kanji' }); }),
+      VOCABULARY.map(function(item) { return Object.assign({}, item, { script: 'vocabulary' }); })
+    );
+    return all.filter(function(item) {
+      const stat = s[item.character];
+      if (!stat) return false;
+      const total = stat.correct + stat.wrong;
+      if (total === 0) return false;
+      return (stat.correct / total) < 0.8;
+    });
   }
 
   function getScriptPool(script) {
@@ -220,5 +239,5 @@ const GameEngine = (() => {
     return timeLeft > 0;
   }
 
-  return { start: start, submitAnswer: submitAnswer, nextQuestion: nextQuestion, stop: stop, isRunning: isRunning, getResults: getResults };
+  return { start: start, submitAnswer: submitAnswer, nextQuestion: nextQuestion, stop: stop, isRunning: isRunning, getResults: getResults, getReviewPool: getReviewPool };
 })();

@@ -480,6 +480,24 @@ input {
   box-shadow: 0 2px 8px rgba(91, 79, 207, 0.25);
 }
 
+.toggle-btn--review {
+  border-color: var(--timer-warning);
+  color: var(--timer-warning);
+}
+
+.toggle-btn--review:hover {
+  background: var(--timer-warning-light);
+  border-color: var(--timer-warning);
+  color: var(--timer-warning);
+}
+
+.toggle-btn--review.active {
+  background: var(--timer-warning);
+  border-color: var(--timer-warning);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(255, 149, 0, 0.3);
+}
+
 .best-score-display {
   text-align: center;
   font-size: 0.9375rem;
@@ -1428,6 +1446,7 @@ html[data-theme="dark"] .legend-item.unseen       { background: #1e1e2a; color: 
           <button class="toggle-btn" data-value="kanji">Kanji</button>
           <button class="toggle-btn" data-value="mixed">Mixed</button>
           <button class="toggle-btn" data-value="vocabulary">Vocabulary</button>
+          <button class="toggle-btn toggle-btn--review" data-value="review">Review</button>
         </div>
       </div>
       <div class="settings-group">
@@ -1524,7 +1543,7 @@ html[data-theme="dark"] .legend-item.unseen       { background: #1e1e2a; color: 
 
 </div>
 
-<footer class="app-version">0c7b1ae</footer>
+<footer class="app-version">c253be0</footer>
 
 <script>
 const HIRAGANA = [
@@ -1918,6 +1937,7 @@ const Storage = (() => {
         kanji:      { '30': 0, '60': 0, '90': 0, '120': 0 },
         mixed:      { '30': 0, '60': 0, '90': 0, '120': 0 },
         vocabulary: { '30': 0, '60': 0, '90': 0, '120': 0 },
+        review:     { '30': 0, '60': 0, '90': 0, '120': 0 },
       },
       lastMissed: [],
       lastSettings: { mode: 'hiragana', direction: 'roman-to-japanese', duration: 60 },
@@ -2261,12 +2281,31 @@ const GameEngine = (() => {
     if (mode === 'katakana')   return KATAKANA.map(function(item) { return Object.assign({}, item, { script: 'katakana' }); });
     if (mode === 'kanji')      return KANJI.map(function(item) { return Object.assign({}, item, { script: 'kanji' }); });
     if (mode === 'vocabulary') return VOCABULARY.map(function(item) { return Object.assign({}, item, { script: 'vocabulary' }); });
+    if (mode === 'review')     return getReviewPool(charStats);
     // mixed
     return [].concat(
       HIRAGANA.map(function(item) { return Object.assign({}, item, { script: 'hiragana' }); }),
       KATAKANA.map(function(item) { return Object.assign({}, item, { script: 'katakana' }); }),
       KANJI.map(function(item) { return Object.assign({}, item, { script: 'kanji' }); })
     );
+  }
+
+  // Items across all scripts that have been attempted but not mastered (<80% accuracy).
+  function getReviewPool(stats) {
+    const s = stats || {};
+    const all = [].concat(
+      HIRAGANA.map(function(item)   { return Object.assign({}, item, { script: 'hiragana' }); }),
+      KATAKANA.map(function(item)   { return Object.assign({}, item, { script: 'katakana' }); }),
+      KANJI.map(function(item)      { return Object.assign({}, item, { script: 'kanji' }); }),
+      VOCABULARY.map(function(item) { return Object.assign({}, item, { script: 'vocabulary' }); })
+    );
+    return all.filter(function(item) {
+      const stat = s[item.character];
+      if (!stat) return false;
+      const total = stat.correct + stat.wrong;
+      if (total === 0) return false;
+      return (stat.correct / total) < 0.8;
+    });
   }
 
   function getScriptPool(script) {
@@ -2439,7 +2478,7 @@ const GameEngine = (() => {
     return timeLeft > 0;
   }
 
-  return { start: start, submitAnswer: submitAnswer, nextQuestion: nextQuestion, stop: stop, isRunning: isRunning, getResults: getResults };
+  return { start: start, submitAnswer: submitAnswer, nextQuestion: nextQuestion, stop: stop, isRunning: isRunning, getResults: getResults, getReviewPool: getReviewPool };
 })();
 
 const App = (() => {
@@ -2799,14 +2838,29 @@ const App = (() => {
   function updateBestScoreDisplay() {
     if (!currentUser) return;
     const best = Storage.getBestScore(currentUser.username, gameSettings.mode, gameSettings.duration);
-    el.bestScoreDisp.textContent = best > 0
+    var text = best > 0
       ? 'Best: ' + best + ' pts for this mode'
       : 'No best score yet for this mode';
+    if (gameSettings.mode === 'review') {
+      const count = GameEngine.getReviewPool(Storage.getCharStats(currentUser.username)).length;
+      const countMsg = count === 0
+        ? 'Nothing to review — play other modes first'
+        : count + ' item' + (count === 1 ? '' : 's') + ' need work';
+      text = countMsg + (best > 0 ? ' · Best: ' + best + ' pts' : '');
+    }
+    el.bestScoreDisp.textContent = text;
   }
 
   // --- Game screen ---
   function startGame() {
     if (!currentUser) { showScreen('users'); return; }
+    if (gameSettings.mode === 'review') {
+      const reviewPool = GameEngine.getReviewPool(Storage.getCharStats(currentUser.username));
+      if (reviewPool.length === 0) {
+        alert('Nothing to review yet — play other modes first so weak items can be tracked.');
+        return;
+      }
+    }
     gameActive = true;
 
     el.gameScore.textContent = '0';
