@@ -18,6 +18,7 @@ const scripts = [
   'src/data/vocabulary.js',
   'src/data/katakana.js',
   'src/data/kanji.js',
+  'src/data/emoji.js',
   'src/storage/localStorage.js',
   'src/storage/gist.js',
   'src/game/engine.js',

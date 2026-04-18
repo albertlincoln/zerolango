@@ -42,6 +42,7 @@ const GameEngine = (() => {
     if (mode === 'katakana')   return KATAKANA.map(function(item) { return Object.assign({}, item, { script: 'katakana' }); });
     if (mode === 'kanji')      return KANJI.map(function(item) { return Object.assign({}, item, { script: 'kanji' }); });
     if (mode === 'vocabulary') return VOCABULARY.map(function(item) { return Object.assign({}, item, { script: 'vocabulary' }); });
+    if (mode === 'emoji')      return EMOJI.map(function(item) { return Object.assign({}, item, { script: 'emoji' }); });
     if (mode === 'review')     return getReviewPool(charStats);
     // mixed
     return [].concat(
@@ -58,7 +59,8 @@ const GameEngine = (() => {
       HIRAGANA.map(function(item)   { return Object.assign({}, item, { script: 'hiragana' }); }),
       KATAKANA.map(function(item)   { return Object.assign({}, item, { script: 'katakana' }); }),
       KANJI.map(function(item)      { return Object.assign({}, item, { script: 'kanji' }); }),
-      VOCABULARY.map(function(item) { return Object.assign({}, item, { script: 'vocabulary' }); })
+      VOCABULARY.map(function(item) { return Object.assign({}, item, { script: 'vocabulary' }); }),
+      EMOJI.map(function(item)      { return Object.assign({}, item, { script: 'emoji' }); })
     );
     return all.filter(function(item) {
       const stat = s[item.character];
@@ -74,6 +76,7 @@ const GameEngine = (() => {
     if (script === 'katakana')   return KATAKANA.map(function(item) { return Object.assign({}, item, { script: 'katakana' }); });
     if (script === 'kanji')      return KANJI.map(function(item) { return Object.assign({}, item, { script: 'kanji' }); });
     if (script === 'vocabulary') return VOCABULARY.map(function(item) { return Object.assign({}, item, { script: 'vocabulary' }); });
+    if (script === 'emoji') return EMOJI.concat(EMOJI_WORDS).map(function(item) { return Object.assign({}, item, { script: 'emoji' }); });
     return [];
   }
 

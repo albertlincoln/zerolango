@@ -1460,6 +1460,7 @@ html[data-theme="dark"] .legend-item.unseen       { background: #1e1e2a; color: 
           <button class="toggle-btn" data-value="mixed">Mixed</button>
           <button class="toggle-btn" data-value="vocabulary">Vocabulary</button>
           <button class="toggle-btn toggle-btn--review" data-value="review">Review</button>
+          <button class="toggle-btn" data-value="emoji">Emoji</button>
         </div>
       </div>
       <div class="settings-group">
@@ -1532,6 +1533,7 @@ html[data-theme="dark"] .legend-item.unseen       { background: #1e1e2a; color: 
         <button class="stats-tab" data-script="katakana">Katakana</button>
         <button class="stats-tab" data-script="kanji">Kanji</button>
         <button class="stats-tab" data-script="vocabulary">Vocabulary</button>
+        <button class="stats-tab" data-script="emoji">Emoji</button>
       </div>
       <div id="stats-grid" class="stats-grid"></div>
     </div>
@@ -1556,7 +1558,7 @@ html[data-theme="dark"] .legend-item.unseen       { background: #1e1e2a; color: 
 
 </div>
 
-<footer class="app-version">1800cc8</footer>
+<footer class="app-version">a3a4de8</footer>
 
 <script>
 const HIRAGANA = [
@@ -1904,6 +1906,112 @@ const KANJI = [
   { character: '国', reading: 'country' },
 ];
 
+const EMOJI = [
+  { character: '🐶', reading: 'dog' },
+  { character: '🐱', reading: 'cat' },
+  { character: '🐟', reading: 'fish' },
+  { character: '🐦', reading: 'bird' },
+  { character: '🐴', reading: 'horse' },
+  { character: '🐄', reading: 'cow' },
+  { character: '🐷', reading: 'pig' },
+  { character: '🐑', reading: 'sheep' },
+  { character: '🐔', reading: 'chicken' },
+  { character: '🐸', reading: 'frog' },
+  { character: '🐢', reading: 'turtle' },
+  { character: '🐘', reading: 'elephant' },
+  { character: '🦁', reading: 'lion' },
+  { character: '🐻', reading: 'bear' },
+  { character: '🐰', reading: 'rabbit' },
+  { character: '🐭', reading: 'mouse' },
+  { character: '🐵', reading: 'monkey' },
+  { character: '🦋', reading: 'butterfly' },
+  { character: '🐍', reading: 'snake' },
+  { character: '🐝', reading: 'bee' },
+  { character: '🌳', reading: 'tree' },
+  { character: '🌸', reading: 'flower' },
+  { character: '⭐', reading: 'star' },
+  { character: '🌙', reading: 'moon' },
+  { character: '☀️', reading: 'sun' },
+];
+
+const EMOJI_WORDS = [
+  { character: '🌈', reading: 'rainbow' },
+  { character: '☁️', reading: 'cloud' },
+  { character: '❄️', reading: 'snow' },
+  { character: '🔥', reading: 'fire' },
+  { character: '💧', reading: 'water' },
+  { character: '🐧', reading: 'penguin' },
+  { character: '🦊', reading: 'fox' },
+  { character: '🦉', reading: 'owl' },
+  { character: '🐬', reading: 'dolphin' },
+  { character: '🐳', reading: 'whale' },
+  { character: '🦈', reading: 'shark' },
+  { character: '🐙', reading: 'octopus' },
+  { character: '🐌', reading: 'snail' },
+  { character: '🦀', reading: 'crab' },
+  { character: '🐊', reading: 'crocodile' },
+  { character: '🍎', reading: 'apple' },
+  { character: '🍌', reading: 'banana' },
+  { character: '🍊', reading: 'orange' },
+  { character: '🍇', reading: 'grapes' },
+  { character: '🍓', reading: 'strawberry' },
+  { character: '🍉', reading: 'watermelon' },
+  { character: '🍋', reading: 'lemon' },
+  { character: '🍑', reading: 'peach' },
+  { character: '🥕', reading: 'carrot' },
+  { character: '🌽', reading: 'corn' },
+  { character: '🍞', reading: 'bread' },
+  { character: '🧀', reading: 'cheese' },
+  { character: '🥚', reading: 'egg' },
+  { character: '🍕', reading: 'pizza' },
+  { character: '🍔', reading: 'hamburger' },
+  { character: '🍦', reading: 'ice cream' },
+  { character: '🍪', reading: 'cookie' },
+  { character: '🎂', reading: 'cake' },
+  { character: '🍫', reading: 'chocolate' },
+  { character: '🥛', reading: 'milk' },
+  { character: '🚗', reading: 'car' },
+  { character: '🚌', reading: 'bus' },
+  { character: '🚂', reading: 'train' },
+  { character: '✈️', reading: 'airplane' },
+  { character: '🚲', reading: 'bicycle' },
+  { character: '🏠', reading: 'house' },
+  { character: '📖', reading: 'book' },
+  { character: '✏️', reading: 'pencil' },
+  { character: '👕', reading: 'shirt' },
+  { character: '👟', reading: 'shoe' },
+  { character: '🎒', reading: 'backpack' },
+  { character: '🎈', reading: 'balloon' },
+  { character: '🎁', reading: 'present' },
+  { character: '⚽', reading: 'ball' },
+  { character: '🔔', reading: 'bell' },
+  { character: '🪑', reading: 'chair' },
+  { character: '🚪', reading: 'door' },
+  { character: '🔑', reading: 'key' },
+  { character: '⏰', reading: 'clock' },
+  { character: '❤️', reading: 'heart' },
+  { character: '👑', reading: 'crown' },
+  { character: '🎩', reading: 'hat' },
+  { character: '👓', reading: 'glasses' },
+  { character: '☂️', reading: 'umbrella' },
+  { character: '🕯️', reading: 'candle' },
+  { character: '🍯', reading: 'honey' },
+  { character: '🧊', reading: 'ice' },
+  { character: '🌊', reading: 'wave' },
+  { character: '🏔️', reading: 'mountain' },
+  { character: '👶', reading: 'baby' },
+  { character: '👧', reading: 'girl' },
+  { character: '👦', reading: 'boy' },
+  { character: '🎵', reading: 'music' },
+  { character: '🎨', reading: 'paint' },
+  { character: '💎', reading: 'diamond' },
+  { character: '🧸', reading: 'teddy bear' },
+  { character: '🍿', reading: 'popcorn' },
+  { character: '🧁', reading: 'cupcake' },
+  { character: '🥤', reading: 'juice' },
+  { character: '🍩', reading: 'donut' },
+];
+
 const Storage = (() => {
   const KEY = 'zerolango_v1';
 
@@ -1951,6 +2059,7 @@ const Storage = (() => {
         mixed:      { '30': 0, '60': 0, '90': 0, '120': 0 },
         vocabulary: { '30': 0, '60': 0, '90': 0, '120': 0 },
         review:     { '30': 0, '60': 0, '90': 0, '120': 0 },
+        emoji:      { '30': 0, '60': 0, '90': 0, '120': 0 },
       },
       lastMissed: [],
       lastSettings: { mode: 'hiragana', direction: 'roman-to-japanese', duration: 60 },
@@ -2294,6 +2403,7 @@ const GameEngine = (() => {
     if (mode === 'katakana')   return KATAKANA.map(function(item) { return Object.assign({}, item, { script: 'katakana' }); });
     if (mode === 'kanji')      return KANJI.map(function(item) { return Object.assign({}, item, { script: 'kanji' }); });
     if (mode === 'vocabulary') return VOCABULARY.map(function(item) { return Object.assign({}, item, { script: 'vocabulary' }); });
+    if (mode === 'emoji')      return EMOJI.map(function(item) { return Object.assign({}, item, { script: 'emoji' }); });
     if (mode === 'review')     return getReviewPool(charStats);
     // mixed
     return [].concat(
@@ -2310,7 +2420,8 @@ const GameEngine = (() => {
       HIRAGANA.map(function(item)   { return Object.assign({}, item, { script: 'hiragana' }); }),
       KATAKANA.map(function(item)   { return Object.assign({}, item, { script: 'katakana' }); }),
       KANJI.map(function(item)      { return Object.assign({}, item, { script: 'kanji' }); }),
-      VOCABULARY.map(function(item) { return Object.assign({}, item, { script: 'vocabulary' }); })
+      VOCABULARY.map(function(item) { return Object.assign({}, item, { script: 'vocabulary' }); }),
+      EMOJI.map(function(item)      { return Object.assign({}, item, { script: 'emoji' }); })
     );
     return all.filter(function(item) {
       const stat = s[item.character];
@@ -2326,6 +2437,7 @@ const GameEngine = (() => {
     if (script === 'katakana')   return KATAKANA.map(function(item) { return Object.assign({}, item, { script: 'katakana' }); });
     if (script === 'kanji')      return KANJI.map(function(item) { return Object.assign({}, item, { script: 'kanji' }); });
     if (script === 'vocabulary') return VOCABULARY.map(function(item) { return Object.assign({}, item, { script: 'vocabulary' }); });
+    if (script === 'emoji') return EMOJI.concat(EMOJI_WORDS).map(function(item) { return Object.assign({}, item, { script: 'emoji' }); });
     return [];
   }
 
@@ -2916,11 +3028,15 @@ const App = (() => {
     if (direction === 'roman-to-japanese') {
       el.gamePrompt.textContent = item.reading;
       el.gamePrompt.className = 'prompt-text';
-      el.directionHint.textContent = item.script === 'vocabulary' ? 'Pick the Japanese word' : 'Pick the Japanese character';
+      if (item.script === 'emoji')          el.directionHint.textContent = 'Pick the emoji';
+      else if (item.script === 'vocabulary') el.directionHint.textContent = 'Pick the Japanese word';
+      else                                   el.directionHint.textContent = 'Pick the Japanese character';
     } else {
       el.gamePrompt.textContent = item.character;
       el.gamePrompt.className = item.script === 'vocabulary' ? 'prompt-vocab' : 'prompt-character';
-      el.directionHint.textContent = (item.script === 'kanji' || item.script === 'vocabulary') ? 'Pick the English meaning' : 'Pick the romaji reading';
+      if (item.script === 'emoji')                                        el.directionHint.textContent = 'Pick the English word';
+      else if (item.script === 'kanji' || item.script === 'vocabulary')   el.directionHint.textContent = 'Pick the English meaning';
+      else                                                                el.directionHint.textContent = 'Pick the romaji reading';
     }
 
     // Options — apply 2-column layout class for 6/8 options
@@ -3080,6 +3196,7 @@ const App = (() => {
     if (script === 'hiragana')        items = HIRAGANA;
     else if (script === 'katakana')   items = KATAKANA;
     else if (script === 'vocabulary') items = VOCABULARY;
+    else if (script === 'emoji')      items = EMOJI;
     else                              items = KANJI;
 
     // Sort: worst accuracy first, unseen last

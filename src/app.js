@@ -420,11 +420,15 @@ const App = (() => {
     if (direction === 'roman-to-japanese') {
       el.gamePrompt.textContent = item.reading;
       el.gamePrompt.className = 'prompt-text';
-      el.directionHint.textContent = item.script === 'vocabulary' ? 'Pick the Japanese word' : 'Pick the Japanese character';
+      if (item.script === 'emoji')          el.directionHint.textContent = 'Pick the emoji';
+      else if (item.script === 'vocabulary') el.directionHint.textContent = 'Pick the Japanese word';
+      else                                   el.directionHint.textContent = 'Pick the Japanese character';
     } else {
       el.gamePrompt.textContent = item.character;
       el.gamePrompt.className = item.script === 'vocabulary' ? 'prompt-vocab' : 'prompt-character';
-      el.directionHint.textContent = (item.script === 'kanji' || item.script === 'vocabulary') ? 'Pick the English meaning' : 'Pick the romaji reading';
+      if (item.script === 'emoji')                                        el.directionHint.textContent = 'Pick the English word';
+      else if (item.script === 'kanji' || item.script === 'vocabulary')   el.directionHint.textContent = 'Pick the English meaning';
+      else                                                                el.directionHint.textContent = 'Pick the romaji reading';
     }
 
     // Options — apply 2-column layout class for 6/8 options
@@ -584,6 +588,7 @@ const App = (() => {
     if (script === 'hiragana')        items = HIRAGANA;
     else if (script === 'katakana')   items = KATAKANA;
     else if (script === 'vocabulary') items = VOCABULARY;
+    else if (script === 'emoji')      items = EMOJI;
     else                              items = KANJI;
 
     // Sort: worst accuracy first, unseen last
