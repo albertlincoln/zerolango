@@ -285,6 +285,18 @@ input {
   display: inline-block;
 }
 
+.brand-celestial::after {
+  content: '☀️';
+}
+
+html[data-theme="dark"] .brand-celestial::after {
+  content: '🌙';
+}
+
+.brand-celestial {
+  font-size: 0.8em;
+}
+
 .brand-star.spinning {
   animation: starSpin 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
