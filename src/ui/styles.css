@@ -295,6 +295,7 @@ html[data-theme="dark"] .brand-celestial::after {
 
 .brand-celestial {
   font-size: 0.8em;
+  margin: 0 0.4em;
 }
 
 .brand-star.spinning {
