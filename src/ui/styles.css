@@ -363,6 +363,12 @@ html[data-theme="dark"] .brand-celestial::after {
   color: var(--text-muted);
 }
 
+.user-streak {
+  font-size: 0.8125rem;
+  color: var(--timer-warning);
+  font-weight: 600;
+}
+
 .user-actions {
   display: flex;
   align-items: center;

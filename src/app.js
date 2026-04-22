@@ -249,6 +249,14 @@ const App = (() => {
       info.appendChild(name);
       info.appendChild(games);
 
+      const streakVal = Storage.getCurrentStreak(user.username);
+      if (streakVal > 0) {
+        const streakEl = document.createElement('span');
+        streakEl.className = 'user-streak';
+        streakEl.textContent = streakVal + ' day streak';
+        info.appendChild(streakEl);
+      }
+
       const actions = document.createElement('div');
       actions.className = 'user-actions';
 
@@ -337,7 +345,8 @@ const App = (() => {
   // --- Setup screen ---
   function showSetupScreen() {
     renderUsersList();
-    el.setupUsername.textContent = currentUser.username;
+    const streakVal = Storage.getCurrentStreak(currentUser.username);
+    el.setupUsername.textContent = currentUser.username + (streakVal > 0 ? ' · ' + streakVal + ' day streak' : '');
     // Restore toggles to current settings
     restoreToggle(el.modeOpts, String(gameSettings.mode));
     restoreToggle(el.directionOpts, String(gameSettings.direction));
@@ -510,6 +519,7 @@ const App = (() => {
       results.score,
       results.missedItems
     );
+    Storage.updateStreak(currentUser.username);
     // Refresh currentUser data
     currentUser = Storage.getUser(currentUser.username);
 

@@ -132,13 +132,24 @@ const GameEngine = (() => {
     used[currentItem.character] = true;
     const distractors = [];
 
-    // Shuffle the pool to pick random distractors
-    const shuffled = shuffle(samePool);
-    for (let i = 0; i < shuffled.length && distractors.length < distractorCount; i++) {
-      if (!used[shuffled[i].character]) {
-        used[shuffled[i].character] = true;
-        distractors.push(shuffled[i]);
+    // Build weighted distractor pool — unseen or weak items are 1.5x more likely
+    const candidates = samePool.filter(function(item) { return !used[item.character]; });
+    for (let d = 0; d < distractorCount && candidates.length > 0; d++) {
+      const weights = candidates.map(function(item) {
+        const stat = charStats[item.character];
+        if (!stat || (stat.correct + stat.wrong) === 0) return 1.5;
+        return (stat.correct / (stat.correct + stat.wrong)) < 0.8 ? 1.5 : 1.0;
+      });
+      const total = weights.reduce(function(s, w) { return s + w; }, 0);
+      let rand = Math.random() * total;
+      let picked = candidates.length - 1;
+      for (let i = 0; i < candidates.length; i++) {
+        rand -= weights[i];
+        if (rand <= 0) { picked = i; break; }
       }
+      used[candidates[picked].character] = true;
+      distractors.push(candidates[picked]);
+      candidates.splice(picked, 1);
     }
 
     currentOptions = shuffle([currentItem].concat(distractors));

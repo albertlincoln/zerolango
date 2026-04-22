@@ -1,6 +1,19 @@
 const Storage = (() => {
   const KEY = 'zerolango_v1';
 
+  function getToday() {
+    const d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+
+  function daysBetween(a, b) {
+    const pa = a.split('-').map(Number);
+    const pb = b.split('-').map(Number);
+    const da = new Date(pa[0], pa[1] - 1, pa[2]);
+    const db = new Date(pb[0], pb[1] - 1, pb[2]);
+    return Math.round((db - da) / 86400000);
+  }
+
   function load() {
     try {
       const data = JSON.parse(localStorage.getItem(KEY)) || { users: {}, lastUser: null, version: 0 };
@@ -49,6 +62,8 @@ const Storage = (() => {
       },
       lastMissed: [],
       lastSettings: { mode: 'hiragana', direction: 'roman-to-japanese', duration: 60 },
+      streak: 0,
+      lastPracticeDate: null,
     };
     data.lastUser = username;
     save(data);
@@ -126,6 +141,41 @@ const Storage = (() => {
     return (user && user.charStats) ? user.charStats : {};
   }
 
+  function updateStreak(username) {
+    const data = load();
+    const user = data.users[username];
+    if (!user) return;
+
+    const today = getToday();
+    const last = user.lastPracticeDate;
+
+    if (last === today) {
+      return;
+    }
+
+    if (!last) {
+      user.streak = 1;
+    } else {
+      const diff = daysBetween(last, today);
+      if (diff <= 2) {
+        user.streak = (user.streak || 0) + 1;
+      } else {
+        user.streak = 1;
+      }
+    }
+
+    user.lastPracticeDate = today;
+    save(data);
+  }
+
+  function getCurrentStreak(username) {
+    const user = getUser(username);
+    if (!user || !user.lastPracticeDate || !user.streak) return 0;
+    const diff = daysBetween(user.lastPracticeDate, getToday());
+    if (diff <= 2) return user.streak;
+    return 0;
+  }
+
   function bumpVersion() {
     const data = load();
     data.version = (data.version || 0) + 1;
@@ -201,6 +251,10 @@ const Storage = (() => {
         lastMissed: mergeLastMissed(localUser.lastMissed, remoteUser.lastMissed),
         lastSettings: remoteUser.lastSettings || localUser.lastSettings,
         charStats: mergeCharStats(localUser.charStats, remoteUser.charStats),
+        streak: ((localUser.lastPracticeDate || '') >= (remoteUser.lastPracticeDate || ''))
+          ? (localUser.streak || 0) : (remoteUser.streak || 0),
+        lastPracticeDate: ((localUser.lastPracticeDate || '') >= (remoteUser.lastPracticeDate || ''))
+          ? localUser.lastPracticeDate : remoteUser.lastPracticeDate,
       };
     });
 
@@ -223,6 +277,8 @@ const Storage = (() => {
     updateCharStat,
     getCharStats,
     saveUserSettings,
+    updateStreak,
+    getCurrentStreak,
     bumpVersion,
     mergeRemote,
   };

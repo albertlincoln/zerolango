@@ -370,6 +370,12 @@ html[data-theme="dark"] .brand-celestial::after {
   color: var(--text-muted);
 }
 
+.user-streak {
+  font-size: 0.8125rem;
+  color: var(--timer-warning);
+  font-weight: 600;
+}
+
 .user-actions {
   display: flex;
   align-items: center;
@@ -1558,7 +1564,7 @@ html[data-theme="dark"] .legend-item.unseen       { background: #1e1e2a; color: 
 
 </div>
 
-<footer class="app-version">61c8ce0</footer>
+<footer class="app-version">f6f319e</footer>
 
 <script>
 const HIRAGANA = [
@@ -2015,6 +2021,19 @@ const EMOJI_WORDS = [
 const Storage = (() => {
   const KEY = 'zerolango_v1';
 
+  function getToday() {
+    const d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+
+  function daysBetween(a, b) {
+    const pa = a.split('-').map(Number);
+    const pb = b.split('-').map(Number);
+    const da = new Date(pa[0], pa[1] - 1, pa[2]);
+    const db = new Date(pb[0], pb[1] - 1, pb[2]);
+    return Math.round((db - da) / 86400000);
+  }
+
   function load() {
     try {
       const data = JSON.parse(localStorage.getItem(KEY)) || { users: {}, lastUser: null, version: 0 };
@@ -2063,6 +2082,8 @@ const Storage = (() => {
       },
       lastMissed: [],
       lastSettings: { mode: 'hiragana', direction: 'roman-to-japanese', duration: 60 },
+      streak: 0,
+      lastPracticeDate: null,
     };
     data.lastUser = username;
     save(data);
@@ -2140,6 +2161,41 @@ const Storage = (() => {
     return (user && user.charStats) ? user.charStats : {};
   }
 
+  function updateStreak(username) {
+    const data = load();
+    const user = data.users[username];
+    if (!user) return;
+
+    const today = getToday();
+    const last = user.lastPracticeDate;
+
+    if (last === today) {
+      return;
+    }
+
+    if (!last) {
+      user.streak = 1;
+    } else {
+      const diff = daysBetween(last, today);
+      if (diff <= 2) {
+        user.streak = (user.streak || 0) + 1;
+      } else {
+        user.streak = 1;
+      }
+    }
+
+    user.lastPracticeDate = today;
+    save(data);
+  }
+
+  function getCurrentStreak(username) {
+    const user = getUser(username);
+    if (!user || !user.lastPracticeDate || !user.streak) return 0;
+    const diff = daysBetween(user.lastPracticeDate, getToday());
+    if (diff <= 2) return user.streak;
+    return 0;
+  }
+
   function bumpVersion() {
     const data = load();
     data.version = (data.version || 0) + 1;
@@ -2215,6 +2271,10 @@ const Storage = (() => {
         lastMissed: mergeLastMissed(localUser.lastMissed, remoteUser.lastMissed),
         lastSettings: remoteUser.lastSettings || localUser.lastSettings,
         charStats: mergeCharStats(localUser.charStats, remoteUser.charStats),
+        streak: ((localUser.lastPracticeDate || '') >= (remoteUser.lastPracticeDate || ''))
+          ? (localUser.streak || 0) : (remoteUser.streak || 0),
+        lastPracticeDate: ((localUser.lastPracticeDate || '') >= (remoteUser.lastPracticeDate || ''))
+          ? localUser.lastPracticeDate : remoteUser.lastPracticeDate,
       };
     });
 
@@ -2237,6 +2297,8 @@ const Storage = (() => {
     updateCharStat,
     getCharStats,
     saveUserSettings,
+    updateStreak,
+    getCurrentStreak,
     bumpVersion,
     mergeRemote,
   };
@@ -2493,13 +2555,24 @@ const GameEngine = (() => {
     used[currentItem.character] = true;
     const distractors = [];
 
-    // Shuffle the pool to pick random distractors
-    const shuffled = shuffle(samePool);
-    for (let i = 0; i < shuffled.length && distractors.length < distractorCount; i++) {
-      if (!used[shuffled[i].character]) {
-        used[shuffled[i].character] = true;
-        distractors.push(shuffled[i]);
+    // Build weighted distractor pool — unseen or weak items are 1.5x more likely
+    const candidates = samePool.filter(function(item) { return !used[item.character]; });
+    for (let d = 0; d < distractorCount && candidates.length > 0; d++) {
+      const weights = candidates.map(function(item) {
+        const stat = charStats[item.character];
+        if (!stat || (stat.correct + stat.wrong) === 0) return 1.5;
+        return (stat.correct / (stat.correct + stat.wrong)) < 0.8 ? 1.5 : 1.0;
+      });
+      const total = weights.reduce(function(s, w) { return s + w; }, 0);
+      let rand = Math.random() * total;
+      let picked = candidates.length - 1;
+      for (let i = 0; i < candidates.length; i++) {
+        rand -= weights[i];
+        if (rand <= 0) { picked = i; break; }
       }
+      used[candidates[picked].character] = true;
+      distractors.push(candidates[picked]);
+      candidates.splice(picked, 1);
     }
 
     currentOptions = shuffle([currentItem].concat(distractors));
@@ -2857,6 +2930,14 @@ const App = (() => {
       info.appendChild(name);
       info.appendChild(games);
 
+      const streakVal = Storage.getCurrentStreak(user.username);
+      if (streakVal > 0) {
+        const streakEl = document.createElement('span');
+        streakEl.className = 'user-streak';
+        streakEl.textContent = streakVal + ' day streak';
+        info.appendChild(streakEl);
+      }
+
       const actions = document.createElement('div');
       actions.className = 'user-actions';
 
@@ -2945,7 +3026,8 @@ const App = (() => {
   // --- Setup screen ---
   function showSetupScreen() {
     renderUsersList();
-    el.setupUsername.textContent = currentUser.username;
+    const streakVal = Storage.getCurrentStreak(currentUser.username);
+    el.setupUsername.textContent = currentUser.username + (streakVal > 0 ? ' · ' + streakVal + ' day streak' : '');
     // Restore toggles to current settings
     restoreToggle(el.modeOpts, String(gameSettings.mode));
     restoreToggle(el.directionOpts, String(gameSettings.direction));
@@ -3118,6 +3200,7 @@ const App = (() => {
       results.score,
       results.missedItems
     );
+    Storage.updateStreak(currentUser.username);
     // Refresh currentUser data
     currentUser = Storage.getUser(currentUser.username);
 
