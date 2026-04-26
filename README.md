@@ -31,5 +31,14 @@ The Roman-Japanese Matching Game is an interactive educational tool designed to 
 ## Getting Started
 To get started with the Roman-Japanese Matching Game, clone the repository and open `index.html` in your web browser. Enjoy learning and matching characters while tracking your progress!
 
+## Tests
+The test suite uses Node's built-in test runner — no external dependencies required. Run all tests with:
+
+```sh
+npm test
+```
+
+Tests live in `test/` and cover the data sets, `Storage`, `GameEngine`, `GistSync`, and the `build.js` bundler.
+
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
