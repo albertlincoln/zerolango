@@ -22,6 +22,7 @@ const App = (() => {
       game:    document.getElementById('screen-game'),
       summary: document.getElementById('screen-summary'),
       stats:   document.getElementById('screen-stats'),
+      reference: document.getElementById('screen-reference'),
     };
 
     // Users screen
@@ -63,6 +64,13 @@ const App = (() => {
     el.statsSummaryBar   = document.getElementById('stats-summary');
     el.statsTabs         = document.getElementById('screen-stats').querySelectorAll('.stats-tab');
     el.statsGrid         = document.getElementById('stats-grid');
+
+    // Reference screen
+    el.btnViewReference     = document.getElementById('btn-view-reference');
+    el.btnBackFromReference = document.getElementById('btn-back-from-reference');
+    el.referenceUsername    = document.getElementById('reference-username-label');
+    el.referenceTabs        = document.getElementById('screen-reference').querySelectorAll('.stats-tab');
+    el.referenceGrid        = document.getElementById('reference-grid');
 
     el.btnThemeToggle   = document.getElementById('btn-theme-toggle');
     el.btnExportData    = document.getElementById('btn-export-data');
@@ -143,6 +151,17 @@ const App = (() => {
         el.statsTabs.forEach(function(t) { t.classList.remove('active'); });
         tab.classList.add('active');
         renderStatsGrid(tab.dataset.script);
+      });
+    });
+
+    // Reference screen
+    el.btnViewReference.addEventListener('click', showReferenceScreen);
+    el.btnBackFromReference.addEventListener('click', function() { showScreen('setup'); });
+    el.referenceTabs.forEach(function(tab) {
+      tab.addEventListener('click', function() {
+        el.referenceTabs.forEach(function(t) { t.classList.remove('active'); });
+        tab.classList.add('active');
+        renderReferenceGrid(tab.dataset.script);
       });
     });
 
@@ -642,6 +661,32 @@ const App = (() => {
         '<div class="stat-counts">' + stat.correct + '/' + total + '</div>' +
         '<div class="stat-bar-wrap"><div class="stat-bar" style="width:' + accuracy + '%"></div></div>' +
         '<div class="stat-pct">' + accuracy + '%</div>' +
+        '</div>';
+    }).join('');
+  }
+
+  // --- Reference screen ---
+  function showReferenceScreen() {
+    el.referenceUsername.textContent = currentUser ? currentUser.username : '';
+    el.referenceTabs.forEach(function(t) { t.classList.toggle('active', t.dataset.script === 'hiragana'); });
+    renderReferenceGrid('hiragana');
+    showScreen('reference');
+  }
+
+  function renderReferenceGrid(script) {
+    var items;
+    if (script === 'hiragana')        items = HIRAGANA;
+    else if (script === 'katakana')   items = KATAKANA;
+    else if (script === 'vocabulary') items = VOCABULARY;
+    else if (script === 'emoji')      items = EMOJI;
+    else                              items = KANJI;
+
+    const vocabClass = script === 'vocabulary' ? ' stat-cell--vocab' : '';
+
+    el.referenceGrid.innerHTML = items.map(function(item) {
+      return '<div class="stat-cell unseen' + vocabClass + '" title="' + item.reading + '">' +
+        '<div class="stat-char">' + item.character + '</div>' +
+        '<div class="stat-reading">' + item.reading + '</div>' +
         '</div>';
     }).join('');
   }

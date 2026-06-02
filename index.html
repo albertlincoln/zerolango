@@ -94,6 +94,7 @@
       <div class="setup-actions">
         <button id="btn-start-game" class="btn-primary btn-large">Start Game</button>
         <button id="btn-view-stats" class="btn-secondary">View Stats</button>
+        <button id="btn-view-reference" class="btn-secondary">Reference</button>
       </div>
     </div>
   </div>
@@ -146,6 +147,26 @@
         <button class="stats-tab" data-script="emoji">Emoji</button>
       </div>
       <div id="stats-grid" class="stats-grid"></div>
+    </div>
+  </div>
+
+  <!-- Screen: Reference -->
+  <div id="screen-reference" class="screen hidden">
+    <div class="screen-content stats-content">
+      <div class="screen-nav">
+        <button id="btn-back-from-reference" class="btn-back">← Setup</button>
+        <span id="reference-username-label" class="current-user-label"></span>
+      </div>
+      <h2>Reference</h2>
+      <p class="reference-intro">Browse every character and word. Tap a tab to switch sets.</p>
+      <div class="stats-tabs" id="reference-tabs">
+        <button class="stats-tab active" data-script="hiragana">Hiragana</button>
+        <button class="stats-tab" data-script="katakana">Katakana</button>
+        <button class="stats-tab" data-script="kanji">Kanji</button>
+        <button class="stats-tab" data-script="vocabulary">Vocabulary</button>
+        <button class="stats-tab" data-script="emoji">Emoji</button>
+      </div>
+      <div id="reference-grid" class="stats-grid"></div>
     </div>
   </div>
 
