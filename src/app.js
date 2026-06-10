@@ -411,7 +411,7 @@ const App = (() => {
     el.gameScore.textContent = '0';
     el.gameStreak.textContent = '0';
     el.gameTimer.textContent = gameSettings.duration;
-    el.gameTimerWrap.classList.remove('timer-warning');
+    el.gameTimerWrap.classList.remove('timer-warning', 'timer-grace');
 
     showScreen('game');
 
@@ -429,6 +429,7 @@ const App = (() => {
       onTick:     handleTick,
       onQuestion: renderQuestion,
       onAnswer:   handleAnswerResult,
+      onGrace:    handleGrace,
       onEnd:      handleGameEnd,
     });
   }
@@ -436,6 +437,13 @@ const App = (() => {
   function handleTick(timeLeft) {
     el.gameTimer.textContent = timeLeft;
     el.gameTimerWrap.classList.toggle('timer-warning', timeLeft <= 10);
+  }
+
+  // Time's up — the player has a few bonus seconds to answer the last question.
+  function handleGrace(secondsLeft) {
+    el.gameTimer.textContent = secondsLeft;
+    el.gameTimerWrap.classList.add('timer-warning', 'timer-grace');
+    el.directionHint.textContent = "Time's up — last answer!";
   }
 
   function renderQuestion(question) {
@@ -452,7 +460,13 @@ const App = (() => {
       else if (item.script === 'vocabulary') el.directionHint.textContent = 'Pick the Japanese word';
       else                                   el.directionHint.textContent = 'Pick the Japanese character';
     } else {
-      el.gamePrompt.textContent = item.character;
+      // Kanji show their kana pronunciation as furigana underneath.
+      if (item.script === 'kanji' && item.kana) {
+        el.gamePrompt.innerHTML = item.character +
+          '<span class="prompt-kana">' + item.kana + '</span>';
+      } else {
+        el.gamePrompt.textContent = item.character;
+      }
       el.gamePrompt.className = item.script === 'vocabulary' ? 'prompt-vocab' : 'prompt-character';
       if (item.script === 'emoji')                                        el.directionHint.textContent = 'Pick the English word';
       else if (item.script === 'kanji' || item.script === 'vocabulary')   el.directionHint.textContent = 'Pick the English meaning';
@@ -468,7 +482,13 @@ const App = (() => {
       btn.dataset.index = i;
 
       if (direction === 'roman-to-japanese') {
-        btn.textContent = opt.character;
+        // Kanji options show their kana pronunciation beneath the character.
+        if (opt.script === 'kanji' && opt.kana) {
+          btn.innerHTML = '<span class="option-char-main">' + opt.character + '</span>' +
+            '<span class="option-kana">' + opt.kana + '</span>';
+        } else {
+          btn.textContent = opt.character;
+        }
         btn.classList.add('option-character');
       } else {
         btn.textContent = opt.reading;
@@ -518,12 +538,18 @@ const App = (() => {
       }
     });
 
-    const delay = isCorrect ? 400 : 1400;
+    // On a wrong guess, show the correct answer for 1.5s and pause the
+    // countdown while it's displayed. Correct guesses advance quickly.
+    var delay = 400;
+    if (!isCorrect) {
+      delay = 1500;
+      GameEngine.pause();
+    }
     clearTimeout(feedbackTimeout);
     feedbackTimeout = setTimeout(function() {
-      if (!GameEngine.isRunning()) return; // timer ended during pause
       // Clear highlights
       btns.forEach(function(btn) { btn.classList.remove('correct', 'incorrect'); });
+      if (!isCorrect) GameEngine.resume();
       GameEngine.nextQuestion();
     }, delay);
   }

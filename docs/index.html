@@ -613,6 +613,16 @@ html[data-theme="dark"] .brand-celestial::after {
   color: var(--timer-warning);
 }
 
+/* Grace period: bonus seconds to answer the final question */
+#game-timer-wrap.timer-grace {
+  background: var(--incorrect-light);
+  border-color: var(--incorrect);
+}
+
+#game-timer-wrap.timer-grace #game-timer {
+  color: var(--incorrect);
+}
+
 .game-body {
   flex: 1;
   display: flex;
@@ -643,6 +653,16 @@ html[data-theme="dark"] .brand-celestial::after {
   font-size: 6rem;
   color: var(--text);
   font-weight: 400;
+}
+
+/* Kana pronunciation shown beneath a kanji prompt (furigana style) */
+#game-prompt .prompt-kana {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-top: 8px;
+  letter-spacing: 0.04em;
 }
 
 #game-prompt.prompt-text {
@@ -728,6 +748,20 @@ body:not(.touch-device) .option-btn:hover:not(:disabled) {
   font-size: 2.5rem;
   font-weight: 400;
   color: var(--text);
+  line-height: 1.1;
+}
+
+/* Kanji option: character stacked over its kana pronunciation */
+.option-btn.option-character {
+  flex-direction: column;
+  gap: 2px;
+}
+
+.option-btn.option-character .option-kana {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
   line-height: 1.1;
 }
 
@@ -1591,7 +1625,7 @@ html[data-theme="dark"] .legend-item.unseen       { background: #1e1e2a; color: 
 
 </div>
 
-<footer class="app-version">2d91d57</footer>
+<footer class="app-version">813981b</footer>
 
 <script>
 const HIRAGANA = [
@@ -1956,56 +1990,56 @@ const KATAKANA = [
 ];
 
 const KANJI = [
-  { character: '水', reading: 'water' },
-  { character: '火', reading: 'fire' },
-  { character: '山', reading: 'mountain' },
-  { character: '川', reading: 'river' },
-  { character: '木', reading: 'tree' },
-  { character: '花', reading: 'flower' },
-  { character: '犬', reading: 'dog' },
-  { character: '猫', reading: 'cat' },
-  { character: '鳥', reading: 'bird' },
-  { character: '魚', reading: 'fish' },
-  { character: '人', reading: 'person' },
-  { character: '日', reading: 'sun' },
-  { character: '月', reading: 'moon' },
-  { character: '年', reading: 'year' },
-  { character: '時', reading: 'time' },
-  { character: '大', reading: 'big' },
-  { character: '小', reading: 'small' },
-  { character: '上', reading: 'up' },
-  { character: '下', reading: 'down' },
-  { character: '中', reading: 'inside' },
-  { character: '右', reading: 'right' },
-  { character: '左', reading: 'left' },
-  { character: '前', reading: 'front' },
-  { character: '後', reading: 'behind' },
-  { character: '今', reading: 'now' },
-  { character: '食', reading: 'eat' },
-  { character: '飲', reading: 'drink' },
-  { character: '見', reading: 'see' },
-  { character: '聞', reading: 'hear' },
-  { character: '話', reading: 'speak' },
-  { character: '書', reading: 'write' },
-  { character: '読', reading: 'read' },
-  { character: '行', reading: 'go' },
-  { character: '来', reading: 'come' },
-  { character: '帰', reading: 'return' },
-  { character: '買', reading: 'buy' },
-  { character: '学', reading: 'study' },
-  { character: '校', reading: 'school' },
-  { character: '生', reading: 'life' },
-  { character: '男', reading: 'man' },
-  { character: '女', reading: 'woman' },
-  { character: '子', reading: 'child' },
-  { character: '友', reading: 'friend' },
-  { character: '家', reading: 'home' },
-  { character: '車', reading: 'car' },
-  { character: '電', reading: 'electric' },
-  { character: '気', reading: 'feeling' },
-  { character: '本', reading: 'book' },
-  { character: '語', reading: 'language' },
-  { character: '国', reading: 'country' },
+  { character: '水', reading: 'water', kana: 'みず' },
+  { character: '火', reading: 'fire', kana: 'ひ' },
+  { character: '山', reading: 'mountain', kana: 'やま' },
+  { character: '川', reading: 'river', kana: 'かわ' },
+  { character: '木', reading: 'tree', kana: 'き' },
+  { character: '花', reading: 'flower', kana: 'はな' },
+  { character: '犬', reading: 'dog', kana: 'いぬ' },
+  { character: '猫', reading: 'cat', kana: 'ねこ' },
+  { character: '鳥', reading: 'bird', kana: 'とり' },
+  { character: '魚', reading: 'fish', kana: 'さかな' },
+  { character: '人', reading: 'person', kana: 'ひと' },
+  { character: '日', reading: 'sun', kana: 'ひ' },
+  { character: '月', reading: 'moon', kana: 'つき' },
+  { character: '年', reading: 'year', kana: 'とし' },
+  { character: '時', reading: 'time', kana: 'とき' },
+  { character: '大', reading: 'big', kana: 'おお' },
+  { character: '小', reading: 'small', kana: 'ちい' },
+  { character: '上', reading: 'up', kana: 'うえ' },
+  { character: '下', reading: 'down', kana: 'した' },
+  { character: '中', reading: 'inside', kana: 'なか' },
+  { character: '右', reading: 'right', kana: 'みぎ' },
+  { character: '左', reading: 'left', kana: 'ひだり' },
+  { character: '前', reading: 'front', kana: 'まえ' },
+  { character: '後', reading: 'behind', kana: 'うしろ' },
+  { character: '今', reading: 'now', kana: 'いま' },
+  { character: '食', reading: 'eat', kana: 'た' },
+  { character: '飲', reading: 'drink', kana: 'の' },
+  { character: '見', reading: 'see', kana: 'み' },
+  { character: '聞', reading: 'hear', kana: 'き' },
+  { character: '話', reading: 'speak', kana: 'はな' },
+  { character: '書', reading: 'write', kana: 'か' },
+  { character: '読', reading: 'read', kana: 'よ' },
+  { character: '行', reading: 'go', kana: 'い' },
+  { character: '来', reading: 'come', kana: 'く' },
+  { character: '帰', reading: 'return', kana: 'かえ' },
+  { character: '買', reading: 'buy', kana: 'か' },
+  { character: '学', reading: 'study', kana: 'がく' },
+  { character: '校', reading: 'school', kana: 'こう' },
+  { character: '生', reading: 'life', kana: 'せい' },
+  { character: '男', reading: 'man', kana: 'おとこ' },
+  { character: '女', reading: 'woman', kana: 'おんな' },
+  { character: '子', reading: 'child', kana: 'こ' },
+  { character: '友', reading: 'friend', kana: 'とも' },
+  { character: '家', reading: 'home', kana: 'いえ' },
+  { character: '車', reading: 'car', kana: 'くるま' },
+  { character: '電', reading: 'electric', kana: 'でん' },
+  { character: '気', reading: 'feeling', kana: 'き' },
+  { character: '本', reading: 'book', kana: 'ほん' },
+  { character: '語', reading: 'language', kana: 'ご' },
+  { character: '国', reading: 'country', kana: 'くに' },
 ];
 
 const EMOJI = [
@@ -2532,6 +2566,15 @@ const GameEngine = (() => {
   let timerInterval = null;
   let missedItems = [];
 
+  // Grace period: when the main countdown hits 0, the player gets this many
+  // extra seconds to answer the question already on screen — but no new
+  // questions and no further time after that.
+  const GRACE_SECONDS = 5;
+  let graceInterval = null;
+  let timeUp = false;          // main countdown finished
+  let ended = false;           // onEnd already fired
+  let currentAnswered = false; // current question has been answered
+
   let currentItem = null;
   let currentOptions = [];
   let currentDirection = 'roman-to-japanese';
@@ -2544,6 +2587,7 @@ const GameEngine = (() => {
   let onQuestion = null;
   let onAnswer = null;
   let onEnd = null;
+  let onGrace = null;
 
   function shuffle(arr) {
     const a = arr.slice();
@@ -2639,6 +2683,7 @@ const GameEngine = (() => {
   }
 
   function generateQuestion() {
+    currentAnswered = false;
     currentItem = weightedPick(pool);
     currentDirection = resolveDirection();
 
@@ -2690,6 +2735,7 @@ const GameEngine = (() => {
     onQuestion       = config.onQuestion || null;
     onAnswer         = config.onAnswer   || null;
     onEnd            = config.onEnd      || null;
+    onGrace          = config.onGrace    || null;
 
     pool        = buildPool(modeSetting);
     score       = 0;
@@ -2699,6 +2745,11 @@ const GameEngine = (() => {
     bestStreak  = 0;
     timeLeft    = duration;
     missedItems = [];
+
+    clearInterval(graceInterval);
+    timeUp          = false;
+    ended           = false;
+    currentAnswered = false;
 
     startTimer();
     const q = generateQuestion();
@@ -2712,12 +2763,55 @@ const GameEngine = (() => {
       if (onTick) onTick(timeLeft);
       if (timeLeft <= 0) {
         clearInterval(timerInterval);
-        if (onEnd) onEnd(getResults());
+        beginGrace();
       }
     }, 1000);
   }
 
+  // Pause / resume the main countdown — used while showing the correct answer
+  // after a wrong guess.
+  function pause() {
+    clearInterval(timerInterval);
+  }
+
+  function resume() {
+    if (timeUp || ended) return;
+    startTimer();
+  }
+
+  // Main time ran out. If the player has already answered the question on
+  // screen, end immediately once feedback finishes (the app drives that via
+  // nextQuestion). Otherwise grant a short grace period to answer it.
+  function beginGrace() {
+    timeUp = true;
+    if (currentAnswered) return;
+    let graceLeft = GRACE_SECONDS;
+    if (onGrace) onGrace(graceLeft);
+    clearInterval(graceInterval);
+    graceInterval = setInterval(function() {
+      graceLeft--;
+      if (onGrace) onGrace(graceLeft);
+      if (graceLeft <= 0) {
+        clearInterval(graceInterval);
+        endGame();
+      }
+    }, 1000);
+  }
+
+  function endGame() {
+    if (ended) return;
+    ended = true;
+    clearInterval(timerInterval);
+    clearInterval(graceInterval);
+    timeLeft = 0;
+    if (onEnd) onEnd(getResults());
+  }
+
   function submitAnswer(selectedItem) {
+    currentAnswered = true;
+    // The last question got answered inside the grace window — stop the grace
+    // countdown so feedback isn't cut short; the game ends after feedback.
+    if (timeUp) clearInterval(graceInterval);
     const isCorrect = selectedItem.character === currentItem.character;
     if (isCorrect) {
       score += 10;
@@ -2742,7 +2836,7 @@ const GameEngine = (() => {
   }
 
   function nextQuestion() {
-    if (timeLeft <= 0) return null;
+    if (timeUp) { endGame(); return null; }
     const q = generateQuestion();
     if (onQuestion) onQuestion(q);
     return q;
@@ -2765,14 +2859,17 @@ const GameEngine = (() => {
 
   function stop() {
     clearInterval(timerInterval);
+    clearInterval(graceInterval);
     timeLeft = 0;
+    timeUp = true;
+    ended = true;
   }
 
   function isRunning() {
     return timeLeft > 0;
   }
 
-  return { start: start, submitAnswer: submitAnswer, nextQuestion: nextQuestion, stop: stop, isRunning: isRunning, getResults: getResults, getReviewPool: getReviewPool };
+  return { start: start, submitAnswer: submitAnswer, nextQuestion: nextQuestion, pause: pause, resume: resume, stop: stop, isRunning: isRunning, getResults: getResults, getReviewPool: getReviewPool };
 })();
 
 const App = (() => {
@@ -3188,7 +3285,7 @@ const App = (() => {
     el.gameScore.textContent = '0';
     el.gameStreak.textContent = '0';
     el.gameTimer.textContent = gameSettings.duration;
-    el.gameTimerWrap.classList.remove('timer-warning');
+    el.gameTimerWrap.classList.remove('timer-warning', 'timer-grace');
 
     showScreen('game');
 
@@ -3206,6 +3303,7 @@ const App = (() => {
       onTick:     handleTick,
       onQuestion: renderQuestion,
       onAnswer:   handleAnswerResult,
+      onGrace:    handleGrace,
       onEnd:      handleGameEnd,
     });
   }
@@ -3213,6 +3311,13 @@ const App = (() => {
   function handleTick(timeLeft) {
     el.gameTimer.textContent = timeLeft;
     el.gameTimerWrap.classList.toggle('timer-warning', timeLeft <= 10);
+  }
+
+  // Time's up — the player has a few bonus seconds to answer the last question.
+  function handleGrace(secondsLeft) {
+    el.gameTimer.textContent = secondsLeft;
+    el.gameTimerWrap.classList.add('timer-warning', 'timer-grace');
+    el.directionHint.textContent = "Time's up — last answer!";
   }
 
   function renderQuestion(question) {
@@ -3229,7 +3334,13 @@ const App = (() => {
       else if (item.script === 'vocabulary') el.directionHint.textContent = 'Pick the Japanese word';
       else                                   el.directionHint.textContent = 'Pick the Japanese character';
     } else {
-      el.gamePrompt.textContent = item.character;
+      // Kanji show their kana pronunciation as furigana underneath.
+      if (item.script === 'kanji' && item.kana) {
+        el.gamePrompt.innerHTML = item.character +
+          '<span class="prompt-kana">' + item.kana + '</span>';
+      } else {
+        el.gamePrompt.textContent = item.character;
+      }
       el.gamePrompt.className = item.script === 'vocabulary' ? 'prompt-vocab' : 'prompt-character';
       if (item.script === 'emoji')                                        el.directionHint.textContent = 'Pick the English word';
       else if (item.script === 'kanji' || item.script === 'vocabulary')   el.directionHint.textContent = 'Pick the English meaning';
@@ -3245,7 +3356,13 @@ const App = (() => {
       btn.dataset.index = i;
 
       if (direction === 'roman-to-japanese') {
-        btn.textContent = opt.character;
+        // Kanji options show their kana pronunciation beneath the character.
+        if (opt.script === 'kanji' && opt.kana) {
+          btn.innerHTML = '<span class="option-char-main">' + opt.character + '</span>' +
+            '<span class="option-kana">' + opt.kana + '</span>';
+        } else {
+          btn.textContent = opt.character;
+        }
         btn.classList.add('option-character');
       } else {
         btn.textContent = opt.reading;
@@ -3295,12 +3412,18 @@ const App = (() => {
       }
     });
 
-    const delay = isCorrect ? 400 : 1400;
+    // On a wrong guess, show the correct answer for 1.5s and pause the
+    // countdown while it's displayed. Correct guesses advance quickly.
+    var delay = 400;
+    if (!isCorrect) {
+      delay = 1500;
+      GameEngine.pause();
+    }
     clearTimeout(feedbackTimeout);
     feedbackTimeout = setTimeout(function() {
-      if (!GameEngine.isRunning()) return; // timer ended during pause
       // Clear highlights
       btns.forEach(function(btn) { btn.classList.remove('correct', 'incorrect'); });
+      if (!isCorrect) GameEngine.resume();
       GameEngine.nextQuestion();
     }, delay);
   }

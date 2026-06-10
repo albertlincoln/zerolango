@@ -606,6 +606,16 @@ html[data-theme="dark"] .brand-celestial::after {
   color: var(--timer-warning);
 }
 
+/* Grace period: bonus seconds to answer the final question */
+#game-timer-wrap.timer-grace {
+  background: var(--incorrect-light);
+  border-color: var(--incorrect);
+}
+
+#game-timer-wrap.timer-grace #game-timer {
+  color: var(--incorrect);
+}
+
 .game-body {
   flex: 1;
   display: flex;
@@ -636,6 +646,16 @@ html[data-theme="dark"] .brand-celestial::after {
   font-size: 6rem;
   color: var(--text);
   font-weight: 400;
+}
+
+/* Kana pronunciation shown beneath a kanji prompt (furigana style) */
+#game-prompt .prompt-kana {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-top: 8px;
+  letter-spacing: 0.04em;
 }
 
 #game-prompt.prompt-text {
@@ -721,6 +741,20 @@ body:not(.touch-device) .option-btn:hover:not(:disabled) {
   font-size: 2.5rem;
   font-weight: 400;
   color: var(--text);
+  line-height: 1.1;
+}
+
+/* Kanji option: character stacked over its kana pronunciation */
+.option-btn.option-character {
+  flex-direction: column;
+  gap: 2px;
+}
+
+.option-btn.option-character .option-kana {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
   line-height: 1.1;
 }
 

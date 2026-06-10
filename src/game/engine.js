@@ -13,6 +13,15 @@ const GameEngine = (() => {
   let timerInterval = null;
   let missedItems = [];
 
+  // Grace period: when the main countdown hits 0, the player gets this many
+  // extra seconds to answer the question already on screen — but no new
+  // questions and no further time after that.
+  const GRACE_SECONDS = 5;
+  let graceInterval = null;
+  let timeUp = false;          // main countdown finished
+  let ended = false;           // onEnd already fired
+  let currentAnswered = false; // current question has been answered
+
   let currentItem = null;
   let currentOptions = [];
   let currentDirection = 'roman-to-japanese';
@@ -25,6 +34,7 @@ const GameEngine = (() => {
   let onQuestion = null;
   let onAnswer = null;
   let onEnd = null;
+  let onGrace = null;
 
   function shuffle(arr) {
     const a = arr.slice();
@@ -120,6 +130,7 @@ const GameEngine = (() => {
   }
 
   function generateQuestion() {
+    currentAnswered = false;
     currentItem = weightedPick(pool);
     currentDirection = resolveDirection();
 
@@ -171,6 +182,7 @@ const GameEngine = (() => {
     onQuestion       = config.onQuestion || null;
     onAnswer         = config.onAnswer   || null;
     onEnd            = config.onEnd      || null;
+    onGrace          = config.onGrace    || null;
 
     pool        = buildPool(modeSetting);
     score       = 0;
@@ -180,6 +192,11 @@ const GameEngine = (() => {
     bestStreak  = 0;
     timeLeft    = duration;
     missedItems = [];
+
+    clearInterval(graceInterval);
+    timeUp          = false;
+    ended           = false;
+    currentAnswered = false;
 
     startTimer();
     const q = generateQuestion();
@@ -193,12 +210,55 @@ const GameEngine = (() => {
       if (onTick) onTick(timeLeft);
       if (timeLeft <= 0) {
         clearInterval(timerInterval);
-        if (onEnd) onEnd(getResults());
+        beginGrace();
       }
     }, 1000);
   }
 
+  // Pause / resume the main countdown — used while showing the correct answer
+  // after a wrong guess.
+  function pause() {
+    clearInterval(timerInterval);
+  }
+
+  function resume() {
+    if (timeUp || ended) return;
+    startTimer();
+  }
+
+  // Main time ran out. If the player has already answered the question on
+  // screen, end immediately once feedback finishes (the app drives that via
+  // nextQuestion). Otherwise grant a short grace period to answer it.
+  function beginGrace() {
+    timeUp = true;
+    if (currentAnswered) return;
+    let graceLeft = GRACE_SECONDS;
+    if (onGrace) onGrace(graceLeft);
+    clearInterval(graceInterval);
+    graceInterval = setInterval(function() {
+      graceLeft--;
+      if (onGrace) onGrace(graceLeft);
+      if (graceLeft <= 0) {
+        clearInterval(graceInterval);
+        endGame();
+      }
+    }, 1000);
+  }
+
+  function endGame() {
+    if (ended) return;
+    ended = true;
+    clearInterval(timerInterval);
+    clearInterval(graceInterval);
+    timeLeft = 0;
+    if (onEnd) onEnd(getResults());
+  }
+
   function submitAnswer(selectedItem) {
+    currentAnswered = true;
+    // The last question got answered inside the grace window — stop the grace
+    // countdown so feedback isn't cut short; the game ends after feedback.
+    if (timeUp) clearInterval(graceInterval);
     const isCorrect = selectedItem.character === currentItem.character;
     if (isCorrect) {
       score += 10;
@@ -223,7 +283,7 @@ const GameEngine = (() => {
   }
 
   function nextQuestion() {
-    if (timeLeft <= 0) return null;
+    if (timeUp) { endGame(); return null; }
     const q = generateQuestion();
     if (onQuestion) onQuestion(q);
     return q;
@@ -246,12 +306,15 @@ const GameEngine = (() => {
 
   function stop() {
     clearInterval(timerInterval);
+    clearInterval(graceInterval);
     timeLeft = 0;
+    timeUp = true;
+    ended = true;
   }
 
   function isRunning() {
     return timeLeft > 0;
   }
 
-  return { start: start, submitAnswer: submitAnswer, nextQuestion: nextQuestion, stop: stop, isRunning: isRunning, getResults: getResults, getReviewPool: getReviewPool };
+  return { start: start, submitAnswer: submitAnswer, nextQuestion: nextQuestion, pause: pause, resume: resume, stop: stop, isRunning: isRunning, getResults: getResults, getReviewPool: getReviewPool };
 })();
