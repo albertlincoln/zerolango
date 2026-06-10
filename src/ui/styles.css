@@ -226,6 +226,12 @@ input {
   margin-top: 16px;
 }
 
+.home-reference {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
 .btn-back {
   display: inline-flex;
   align-items: center;

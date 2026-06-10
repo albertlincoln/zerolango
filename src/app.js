@@ -10,6 +10,7 @@ const App = (() => {
   let feedbackTimeout = null;
   let lastQuestion = null;
   let statsReturnScreen = 'setup';
+  let referenceReturnScreen = 'setup';
 
   // --- DOM refs (populated in init) ---
   const el = {};
@@ -67,6 +68,7 @@ const App = (() => {
 
     // Reference screen
     el.btnViewReference     = document.getElementById('btn-view-reference');
+    el.btnHomeReference     = document.getElementById('btn-home-reference');
     el.btnBackFromReference = document.getElementById('btn-back-from-reference');
     el.referenceUsername    = document.getElementById('reference-username-label');
     el.referenceTabs        = document.getElementById('screen-reference').querySelectorAll('.stats-tab');
@@ -155,8 +157,15 @@ const App = (() => {
     });
 
     // Reference screen
-    el.btnViewReference.addEventListener('click', showReferenceScreen);
-    el.btnBackFromReference.addEventListener('click', function() { showScreen('setup'); });
+    el.btnViewReference.addEventListener('click', function() {
+      referenceReturnScreen = 'setup';
+      showReferenceScreen();
+    });
+    el.btnHomeReference.addEventListener('click', function() {
+      referenceReturnScreen = 'users';
+      showReferenceScreen();
+    });
+    el.btnBackFromReference.addEventListener('click', function() { showScreen(referenceReturnScreen); });
     el.referenceTabs.forEach(function(tab) {
       tab.addEventListener('click', function() {
         el.referenceTabs.forEach(function(t) { t.classList.remove('active'); });

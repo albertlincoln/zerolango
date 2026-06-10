@@ -233,6 +233,12 @@ input {
   margin-top: 16px;
 }
 
+.home-reference {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
 .btn-back {
   display: inline-flex;
   align-items: center;
@@ -1508,6 +1514,9 @@ html[data-theme="dark"] .legend-item.unseen       { background: #1e1e2a; color: 
         <button id="btn-add-user" class="btn-primary">Add User</button>
       </div>
       <p id="users-error" class="error-msg hidden"></p>
+      <div class="home-reference">
+        <button id="btn-home-reference" class="btn-secondary">📖 Character Reference</button>
+      </div>
       <div class="data-actions">
         <button id="btn-export-data" class="btn-ghost btn-small">Export data</button>
         <label class="btn-ghost btn-small" style="cursor:pointer">
@@ -1638,7 +1647,7 @@ html[data-theme="dark"] .legend-item.unseen       { background: #1e1e2a; color: 
   <div id="screen-reference" class="screen hidden">
     <div class="screen-content stats-content">
       <div class="screen-nav">
-        <button id="btn-back-from-reference" class="btn-back">← Setup</button>
+        <button id="btn-back-from-reference" class="btn-back">← Back</button>
         <span id="reference-username-label" class="current-user-label"></span>
       </div>
       <h2>Reference</h2>
@@ -1673,7 +1682,7 @@ html[data-theme="dark"] .legend-item.unseen       { background: #1e1e2a; color: 
 
 </div>
 
-<footer class="app-version">bacacd0</footer>
+<footer class="app-version">7addc07</footer>
 
 <script>
 const HIRAGANA = [
@@ -2932,6 +2941,7 @@ const App = (() => {
   let feedbackTimeout = null;
   let lastQuestion = null;
   let statsReturnScreen = 'setup';
+  let referenceReturnScreen = 'setup';
 
   // --- DOM refs (populated in init) ---
   const el = {};
@@ -2989,6 +2999,7 @@ const App = (() => {
 
     // Reference screen
     el.btnViewReference     = document.getElementById('btn-view-reference');
+    el.btnHomeReference     = document.getElementById('btn-home-reference');
     el.btnBackFromReference = document.getElementById('btn-back-from-reference');
     el.referenceUsername    = document.getElementById('reference-username-label');
     el.referenceTabs        = document.getElementById('screen-reference').querySelectorAll('.stats-tab');
@@ -3077,8 +3088,15 @@ const App = (() => {
     });
 
     // Reference screen
-    el.btnViewReference.addEventListener('click', showReferenceScreen);
-    el.btnBackFromReference.addEventListener('click', function() { showScreen('setup'); });
+    el.btnViewReference.addEventListener('click', function() {
+      referenceReturnScreen = 'setup';
+      showReferenceScreen();
+    });
+    el.btnHomeReference.addEventListener('click', function() {
+      referenceReturnScreen = 'users';
+      showReferenceScreen();
+    });
+    el.btnBackFromReference.addEventListener('click', function() { showScreen(referenceReturnScreen); });
     el.referenceTabs.forEach(function(tab) {
       tab.addEventListener('click', function() {
         el.referenceTabs.forEach(function(t) { t.classList.remove('active'); });
