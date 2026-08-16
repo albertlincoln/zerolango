@@ -465,9 +465,10 @@ const App = (() => {
     if (direction === 'roman-to-japanese') {
       el.gamePrompt.textContent = item.reading;
       el.gamePrompt.className = 'prompt-text';
-      if (item.script === 'emoji')          el.directionHint.textContent = 'Pick the emoji';
-      else if (item.script === 'vocabulary') el.directionHint.textContent = 'Pick the Japanese word';
-      else                                   el.directionHint.textContent = 'Pick the Japanese character';
+      if (item.script === 'emoji')            el.directionHint.textContent = 'Pick the emoji';
+      else if (item.script === 'vocabulary')  el.directionHint.textContent = 'Pick the Japanese word';
+      else if (item.script === 'conjugation') el.directionHint.textContent = 'Pick the conjugated form';
+      else                                    el.directionHint.textContent = 'Pick the Japanese character';
     } else {
       // Kanji show their kana pronunciation as furigana underneath.
       if (item.script === 'kanji' && item.kana) {
@@ -476,8 +477,10 @@ const App = (() => {
       } else {
         el.gamePrompt.textContent = item.character;
       }
-      el.gamePrompt.className = item.script === 'vocabulary' ? 'prompt-vocab' : 'prompt-character';
+      el.gamePrompt.className = (item.script === 'vocabulary' || item.script === 'conjugation')
+        ? 'prompt-vocab' : 'prompt-character';
       if (item.script === 'emoji')                                        el.directionHint.textContent = 'Pick the English word';
+      else if (item.script === 'conjugation')                             el.directionHint.textContent = 'Pick the meaning and form';
       else if (item.script === 'kanji' || item.script === 'vocabulary')   el.directionHint.textContent = 'Pick the English meaning';
       else                                                                el.directionHint.textContent = 'Pick the romaji reading';
     }
@@ -653,6 +656,7 @@ const App = (() => {
     else if (script === 'katakana')   items = KATAKANA;
     else if (script === 'vocabulary') items = VOCABULARY;
     else if (script === 'emoji')      items = EMOJI;
+    else if (script === 'conjugation') items = CONJUGATION;
     else                              items = KANJI;
 
     // Sort: worst accuracy first, unseen last
@@ -669,7 +673,7 @@ const App = (() => {
       return accA - accB;
     });
 
-    const vocabClass = script === 'vocabulary' ? ' stat-cell--vocab' : '';
+    const vocabClass = (script === 'vocabulary' || script === 'conjugation') ? ' stat-cell--vocab' : '';
 
     el.statsGrid.innerHTML = sorted.map(function(item) {
       const stat = charStats[item.character];
@@ -714,9 +718,10 @@ const App = (() => {
     else if (script === 'katakana')   items = KATAKANA;
     else if (script === 'vocabulary') items = VOCABULARY;
     else if (script === 'emoji')      items = EMOJI;
+    else if (script === 'conjugation') items = CONJUGATION;
     else                              items = KANJI;
 
-    const vocabClass = script === 'vocabulary' ? ' stat-cell--vocab' : '';
+    const vocabClass = (script === 'vocabulary' || script === 'conjugation') ? ' stat-cell--vocab' : '';
 
     el.referenceGrid.innerHTML = items.map(function(item) {
       return '<div class="stat-cell unseen' + vocabClass + '" title="' + item.reading + '">' +

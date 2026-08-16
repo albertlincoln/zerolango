@@ -53,6 +53,7 @@ const GameEngine = (() => {
     if (mode === 'kanji')      return KANJI.map(function(item) { return Object.assign({}, item, { script: 'kanji' }); });
     if (mode === 'vocabulary') return VOCABULARY.map(function(item) { return Object.assign({}, item, { script: 'vocabulary' }); });
     if (mode === 'emoji')      return EMOJI.map(function(item) { return Object.assign({}, item, { script: 'emoji' }); });
+    if (mode === 'conjugation') return CONJUGATION.map(function(item) { return Object.assign({}, item, { script: 'conjugation' }); });
     if (mode === 'review')     return getReviewPool(charStats);
     // mixed
     return [].concat(
@@ -70,7 +71,8 @@ const GameEngine = (() => {
       KATAKANA.map(function(item)   { return Object.assign({}, item, { script: 'katakana' }); }),
       KANJI.map(function(item)      { return Object.assign({}, item, { script: 'kanji' }); }),
       VOCABULARY.map(function(item) { return Object.assign({}, item, { script: 'vocabulary' }); }),
-      EMOJI.map(function(item)      { return Object.assign({}, item, { script: 'emoji' }); })
+      EMOJI.map(function(item)      { return Object.assign({}, item, { script: 'emoji' }); }),
+      CONJUGATION.map(function(item) { return Object.assign({}, item, { script: 'conjugation' }); })
     );
     return all.filter(function(item) {
       const stat = s[item.character];
@@ -81,12 +83,23 @@ const GameEngine = (() => {
     });
   }
 
-  function getScriptPool(script) {
-    if (script === 'hiragana')   return HIRAGANA.map(function(item) { return Object.assign({}, item, { script: 'hiragana' }); });
-    if (script === 'katakana')   return KATAKANA.map(function(item) { return Object.assign({}, item, { script: 'katakana' }); });
-    if (script === 'kanji')      return KANJI.map(function(item) { return Object.assign({}, item, { script: 'kanji' }); });
-    if (script === 'vocabulary') return VOCABULARY.map(function(item) { return Object.assign({}, item, { script: 'vocabulary' }); });
-    if (script === 'emoji') return EMOJI.concat(EMOJI_WORDS).map(function(item) { return Object.assign({}, item, { script: 'emoji' }); });
+  // `item` is the question's correct answer — only used where distractors need
+  // to be narrower than the whole script (conjugation drills on one verb).
+  function getScriptPool(script, item) {
+    if (script === 'hiragana')   return HIRAGANA.map(function(i) { return Object.assign({}, i, { script: 'hiragana' }); });
+    if (script === 'katakana')   return KATAKANA.map(function(i) { return Object.assign({}, i, { script: 'katakana' }); });
+    if (script === 'kanji')      return KANJI.map(function(i) { return Object.assign({}, i, { script: 'kanji' }); });
+    if (script === 'vocabulary') return VOCABULARY.map(function(i) { return Object.assign({}, i, { script: 'vocabulary' }); });
+    if (script === 'emoji') return EMOJI.concat(EMOJI_WORDS).map(function(i) { return Object.assign({}, i, { script: 'emoji' }); });
+    if (script === 'conjugation') {
+      // Other forms of the same verb, so the question tests the conjugation
+      // rather than which verb it is. Falls back to the full set if the verb
+      // can't be identified.
+      const all = CONJUGATION.map(function(i) { return Object.assign({}, i, { script: 'conjugation' }); });
+      if (!item || !item.group) return all;
+      const sameVerb = all.filter(function(i) { return i.group === item.group; });
+      return sameVerb.length >= 4 ? sameVerb : all;
+    }
     return [];
   }
 
@@ -138,7 +151,7 @@ const GameEngine = (() => {
     const distractorCount = optionCount - 1;
 
     // Build distractors from same script as correct item
-    const samePool = getScriptPool(currentItem.script);
+    const samePool = getScriptPool(currentItem.script, currentItem);
     const used = {};
     used[currentItem.character] = true;
     const distractors = [];

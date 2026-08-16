@@ -54,6 +54,7 @@ Scripts **must** be loaded in this order or globals won't exist when needed:
 | `src/data/katakana.js` | `KATAKANA` | 71 katakana entries (same structure) |
 | `src/data/kanji.js` | `KANJI` | 50 kanji with English meanings |
 | `src/data/vocabulary.js` | `VOCABULARY` | 50 vocabulary words with English meanings |
+| `src/data/conjugation.js` | `CONJUGATION` | Verb conjugation drill — 15 verbs × 8 forms, each tagged with a `group` |
 | `src/storage/localStorage.js` | `Storage` | All localStorage read/write. Single key: `zerolango_v1` |
 | `src/storage/gist.js` | `GistSync` | GitHub Gist sync API (push/pull) |
 | `src/game/engine.js` | `GameEngine` | Timer, question generation, weighted selection, scoring |
@@ -82,6 +83,15 @@ Object.assign({}, item, { script: 'hiragana' }) // 'hiragana' | 'katakana' | 'ka
 ```
 
 `script` drives distractor selection: distractors always come from the same script as the correct answer.
+
+### The `group` field (conjugation only)
+
+`CONJUGATION` items carry an extra `group` key holding the dictionary-form romaji
+(`'taberu'`, `'nomu'`, …). `getScriptPool(script, item)` narrows the conjugation
+distractor pool to items sharing the correct answer's `group`, so every option is
+a different form of the *same* verb — the question tests the conjugation rather
+than which verb it is. Any dataset can opt into this by adding a `group` key and
+a matching branch; without one, `getScriptPool` ignores the second argument.
 
 ---
 

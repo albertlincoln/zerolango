@@ -59,6 +59,7 @@ const Storage = (() => {
         vocabulary: { '30': 0, '60': 0, '90': 0, '120': 0 },
         review:     { '30': 0, '60': 0, '90': 0, '120': 0 },
         emoji:      { '30': 0, '60': 0, '90': 0, '120': 0 },
+        conjugation: { '30': 0, '60': 0, '90': 0, '120': 0 },
       },
       lastMissed: [],
       lastSettings: { mode: 'hiragana', direction: 'roman-to-japanese', duration: 60 },

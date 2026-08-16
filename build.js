@@ -19,6 +19,7 @@ const scripts = [
   'src/data/katakana.js',
   'src/data/kanji.js',
   'src/data/emoji.js',
+  'src/data/conjugation.js',
   'src/storage/localStorage.js',
   'src/storage/gist.js',
   'src/game/engine.js',
