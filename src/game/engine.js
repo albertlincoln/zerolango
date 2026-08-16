@@ -17,6 +17,9 @@ const GameEngine = (() => {
   // extra seconds to answer the question already on screen — but no new
   // questions and no further time after that.
   const GRACE_SECONDS = 5;
+  // How long the correct answer stays highlighted after the grace period
+  // expires unanswered, before the summary appears.
+  const REVEAL_MS = 500;
   let graceInterval = null;
   let timeUp = false;          // main countdown finished
   let ended = false;           // onEnd already fired
@@ -35,6 +38,7 @@ const GameEngine = (() => {
   let onAnswer = null;
   let onEnd = null;
   let onGrace = null;
+  let onTimeout = null;
 
   function shuffle(arr) {
     const a = arr.slice();
@@ -196,6 +200,7 @@ const GameEngine = (() => {
     onAnswer         = config.onAnswer   || null;
     onEnd            = config.onEnd      || null;
     onGrace          = config.onGrace    || null;
+    onTimeout        = config.onTimeout  || null;
 
     pool        = buildPool(modeSetting);
     score       = 0;
@@ -253,7 +258,13 @@ const GameEngine = (() => {
       if (onGrace) onGrace(graceLeft);
       if (graceLeft <= 0) {
         clearInterval(graceInterval);
-        endGame();
+        // Reveal the answer they never got to before the summary takes over.
+        if (onTimeout) {
+          onTimeout(currentItem);
+          setTimeout(endGame, REVEAL_MS);
+        } else {
+          endGame();
+        }
       }
     }, 1000);
   }

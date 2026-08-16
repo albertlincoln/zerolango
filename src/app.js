@@ -8,6 +8,9 @@ const App = (() => {
   };
   let gameActive = false;
   let feedbackTimeout = null;
+  // How long the correct answer stays highlighted after a wrong guess or a
+  // timeout. The countdown is paused for the duration, so it costs no time.
+  const REVEAL_MS = 500;
   let lastQuestion = null;
   let statsReturnScreen = 'setup';
   let referenceReturnScreen = 'setup';
@@ -439,6 +442,7 @@ const App = (() => {
       onQuestion: renderQuestion,
       onAnswer:   handleAnswerResult,
       onGrace:    handleGrace,
+      onTimeout:  handleTimeout,
       onEnd:      handleGameEnd,
     });
   }
@@ -525,6 +529,27 @@ const App = (() => {
     GameEngine.submitAnswer(selectedItem);
   }
 
+  // Mark the correct option green, and the picked one red when it was wrong.
+  // `wrongItem` is null when there was no wrong pick (correct answer, timeout).
+  function highlightAnswer(correctItem, wrongItem) {
+    el.gameOptions.querySelectorAll('.option-btn').forEach(function(btn) {
+      const idx = parseInt(btn.dataset.index, 10);
+      const opt = lastQuestion.options[idx];
+      if (opt.character === correctItem.character) {
+        btn.classList.add('correct');
+      } else if (wrongItem && opt.character === wrongItem.character) {
+        btn.classList.add('incorrect');
+      }
+    });
+  }
+
+  // Grace period expired with no answer — show what it was before the summary.
+  function handleTimeout(correctItem) {
+    disableAllOptions();
+    el.directionHint.textContent = "Time's up!";
+    highlightAnswer(correctItem, null);
+  }
+
   function handleAnswerResult(result) {
     const isCorrect   = result.isCorrect;
     const correctItem = result.correctItem;
@@ -540,21 +565,13 @@ const App = (() => {
 
     // Highlight buttons
     const btns = el.gameOptions.querySelectorAll('.option-btn');
-    btns.forEach(function(btn) {
-      const idx = parseInt(btn.dataset.index, 10);
-      const opt = lastQuestion.options[idx];
-      if (opt.character === correctItem.character) {
-        btn.classList.add('correct');
-      } else if (opt.character === selectedItem.character && !isCorrect) {
-        btn.classList.add('incorrect');
-      }
-    });
+    highlightAnswer(correctItem, isCorrect ? null : selectedItem);
 
-    // On a wrong guess, show the correct answer for 1.5s and pause the
-    // countdown while it's displayed. Correct guesses advance quickly.
+    // On a wrong guess, show the correct answer for 0.5s and pause the
+    // countdown while it's displayed, so the reveal costs no game time.
     var delay = 400;
     if (!isCorrect) {
-      delay = 1500;
+      delay = REVEAL_MS;
       GameEngine.pause();
     }
     clearTimeout(feedbackTimeout);
