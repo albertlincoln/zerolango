@@ -10,7 +10,7 @@ const App = (() => {
   let feedbackTimeout = null;
   // How long the correct answer stays highlighted after a wrong guess or a
   // timeout. The countdown is paused for the duration, so it costs no time.
-  const REVEAL_MS = 500;
+  const REVEAL_MS = 1000;
   let lastQuestion = null;
   let statsReturnScreen = 'setup';
   let referenceReturnScreen = 'setup';
