@@ -51,6 +51,8 @@ const App = (() => {
     el.gameStreak    = document.getElementById('game-streak');
     el.gamePrompt    = document.getElementById('game-prompt');
     el.directionHint = document.getElementById('game-direction-hint');
+    el.promptMarkLeft  = document.getElementById('prompt-mark-left');
+    el.promptMarkRight = document.getElementById('prompt-mark-right');
     el.gameOptions   = document.getElementById('game-options');
 
     // Summary screen
@@ -459,8 +461,25 @@ const App = (() => {
     el.directionHint.textContent = "Time's up — last answer!";
   }
 
+  // Green check / red x flanking the prompt. `isCorrect` null clears them.
+  function setPromptMarks(isCorrect) {
+    [el.promptMarkLeft, el.promptMarkRight].forEach(function(mark) {
+      mark.classList.remove('mark-correct', 'mark-incorrect');
+      if (isCorrect === null) {
+        mark.textContent = '';
+      } else if (isCorrect) {
+        mark.textContent = '\u2713';
+        mark.classList.add('mark-correct');
+      } else {
+        mark.textContent = '\u2715';
+        mark.classList.add('mark-incorrect');
+      }
+    });
+  }
+
   function renderQuestion(question) {
     lastQuestion = question;
+    setPromptMarks(null);
     const item      = question.item;
     const options   = question.options;
     const direction = question.direction;
@@ -547,6 +566,7 @@ const App = (() => {
   function handleTimeout(correctItem) {
     disableAllOptions();
     el.directionHint.textContent = "Time's up!";
+    setPromptMarks(false);
     highlightAnswer(correctItem, null);
   }
 
@@ -566,6 +586,7 @@ const App = (() => {
     // Highlight buttons
     const btns = el.gameOptions.querySelectorAll('.option-btn');
     highlightAnswer(correctItem, isCorrect ? null : selectedItem);
+    setPromptMarks(isCorrect);
 
     // On a wrong guess, show the correct answer for 0.5s and pause the
     // countdown while it's displayed, so the reveal costs no game time.
@@ -578,6 +599,7 @@ const App = (() => {
     feedbackTimeout = setTimeout(function() {
       // Clear highlights
       btns.forEach(function(btn) { btn.classList.remove('correct', 'incorrect'); });
+      setPromptMarks(null);
       if (!isCorrect) GameEngine.resume();
       GameEngine.nextQuestion();
     }, delay);

@@ -643,9 +643,39 @@ html[data-theme="dark"] .brand-celestial::after {
   gap: 10px;
 }
 
+#game-prompt-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
 #game-prompt {
   line-height: 1.1;
+  min-width: 0;
   transition: transform 120ms ease, opacity 120ms ease;
+}
+
+/* Correct / wrong marks flanking the prompt. Reserve their width at all
+   times so revealing one never shifts the prompt sideways. */
+.prompt-mark {
+  flex: none;
+  width: 2rem;
+  font-size: 2rem;
+  line-height: 1;
+  font-weight: 700;
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+.prompt-mark.mark-correct {
+  color: var(--correct);
+  opacity: 1;
+}
+
+.prompt-mark.mark-incorrect {
+  color: var(--incorrect);
+  opacity: 1;
 }
 
 #game-prompt.prompt-character {
@@ -971,6 +1001,15 @@ body:not(.touch-device) .option-btn:hover:not(:disabled) {
 
   #game-prompt.prompt-character {
     font-size: 5rem;
+  }
+
+  #game-prompt-row {
+    gap: 10px;
+  }
+
+  .prompt-mark {
+    width: 1.5rem;
+    font-size: 1.5rem;
   }
 
   #game-prompt.prompt-text {

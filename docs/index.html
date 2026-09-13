@@ -650,9 +650,39 @@ html[data-theme="dark"] .brand-celestial::after {
   gap: 10px;
 }
 
+#game-prompt-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
 #game-prompt {
   line-height: 1.1;
+  min-width: 0;
   transition: transform 120ms ease, opacity 120ms ease;
+}
+
+/* Correct / wrong marks flanking the prompt. Reserve their width at all
+   times so revealing one never shifts the prompt sideways. */
+.prompt-mark {
+  flex: none;
+  width: 2rem;
+  font-size: 2rem;
+  line-height: 1;
+  font-weight: 700;
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+.prompt-mark.mark-correct {
+  color: var(--correct);
+  opacity: 1;
+}
+
+.prompt-mark.mark-incorrect {
+  color: var(--incorrect);
+  opacity: 1;
 }
 
 #game-prompt.prompt-character {
@@ -978,6 +1008,15 @@ body:not(.touch-device) .option-btn:hover:not(:disabled) {
 
   #game-prompt.prompt-character {
     font-size: 5rem;
+  }
+
+  #game-prompt-row {
+    gap: 10px;
+  }
+
+  .prompt-mark {
+    width: 1.5rem;
+    font-size: 1.5rem;
   }
 
   #game-prompt.prompt-text {
@@ -1610,7 +1649,11 @@ html[data-theme="dark"] .legend-item.unseen       { background: #1e1e2a; color: 
     </div>
     <div class="game-body">
       <div id="game-prompt-wrap">
-        <div id="game-prompt"></div>
+        <div id="game-prompt-row">
+          <span id="prompt-mark-left" class="prompt-mark" aria-hidden="true"></span>
+          <div id="game-prompt"></div>
+          <span id="prompt-mark-right" class="prompt-mark" aria-hidden="true"></span>
+        </div>
         <div id="game-direction-hint" class="direction-hint"></div>
       </div>
       <div id="game-options" class="options-grid"></div>
@@ -1685,7 +1728,7 @@ html[data-theme="dark"] .legend-item.unseen       { background: #1e1e2a; color: 
 
 </div>
 
-<footer class="app-version">9aefd87</footer>
+<footer class="app-version">b6ec9e1</footer>
 
 <script>
 const HIRAGANA = [
@@ -3175,6 +3218,8 @@ const App = (() => {
     el.gameStreak    = document.getElementById('game-streak');
     el.gamePrompt    = document.getElementById('game-prompt');
     el.directionHint = document.getElementById('game-direction-hint');
+    el.promptMarkLeft  = document.getElementById('prompt-mark-left');
+    el.promptMarkRight = document.getElementById('prompt-mark-right');
     el.gameOptions   = document.getElementById('game-options');
 
     // Summary screen
@@ -3583,8 +3628,25 @@ const App = (() => {
     el.directionHint.textContent = "Time's up — last answer!";
   }
 
+  // Green check / red x flanking the prompt. `isCorrect` null clears them.
+  function setPromptMarks(isCorrect) {
+    [el.promptMarkLeft, el.promptMarkRight].forEach(function(mark) {
+      mark.classList.remove('mark-correct', 'mark-incorrect');
+      if (isCorrect === null) {
+        mark.textContent = '';
+      } else if (isCorrect) {
+        mark.textContent = '\u2713';
+        mark.classList.add('mark-correct');
+      } else {
+        mark.textContent = '\u2715';
+        mark.classList.add('mark-incorrect');
+      }
+    });
+  }
+
   function renderQuestion(question) {
     lastQuestion = question;
+    setPromptMarks(null);
     const item      = question.item;
     const options   = question.options;
     const direction = question.direction;
@@ -3671,6 +3733,7 @@ const App = (() => {
   function handleTimeout(correctItem) {
     disableAllOptions();
     el.directionHint.textContent = "Time's up!";
+    setPromptMarks(false);
     highlightAnswer(correctItem, null);
   }
 
@@ -3690,6 +3753,7 @@ const App = (() => {
     // Highlight buttons
     const btns = el.gameOptions.querySelectorAll('.option-btn');
     highlightAnswer(correctItem, isCorrect ? null : selectedItem);
+    setPromptMarks(isCorrect);
 
     // On a wrong guess, show the correct answer for 0.5s and pause the
     // countdown while it's displayed, so the reveal costs no game time.
@@ -3702,6 +3766,7 @@ const App = (() => {
     feedbackTimeout = setTimeout(function() {
       // Clear highlights
       btns.forEach(function(btn) { btn.classList.remove('correct', 'incorrect'); });
+      setPromptMarks(null);
       if (!isCorrect) GameEngine.resume();
       GameEngine.nextQuestion();
     }, delay);
